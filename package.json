@@ -1,0 +1,16 @@
+{
+  "name": "@mini-vue-phil/monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.1.3",
+    "vitest": "^0.31.4"
+  }
+}
