@@ -1,16 +1,21 @@
+import { track, trigger } from './effect'
+
 function reactive<T extends object>(raw: T): T {
   return new Proxy(raw, {
-    get(target, key) {
-      const value = Reflect.get(target, key);
+    get(target, key: string) {
+      const value = Reflect.get(target, key)
       // TODO 依赖追踪
-      return value;
+      track(target, key)
+      return value
     },
-    set(target, key, value) {
-      const res = Reflect.set(target, key, value);
+    set(target, key: string, value) {
+      const res = Reflect.set(target, key, value)
+      console.log('resizeBy', target)
       // TODO 触发依赖
-      return res;
+      trigger(target, key)
+      return res
     },
-  });
+  })
 }
 
-export { reactive };
+export { reactive }
