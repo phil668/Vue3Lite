@@ -19,20 +19,14 @@ function createSetter<T extends object>() {
   }
 }
 
-function reactive<T extends object>(raw: T): T {
-  return new Proxy(raw, {
-    get: createGetter<T>(),
-    set: createSetter<T>(),
-  })
+interface MutableHandlers<T extends object> {
+  get: ReturnType<typeof createGetter<T>>
+  set: ReturnType<typeof createSetter<T>>
 }
 
-function readonly<T extends object>(raw: T): T {
-  return new Proxy(raw, {
-    get: createGetter(true),
-    set(target, key: string, value) {
-      return true
-    },
-  })
-}
+function createMutableHandlers<T extends object>(): MutableHandlers<T> {
+  const getter = createGetter<T>()
+  const setter = createSetter<T>()
 
-export { reactive, readonly }
+  return { get: getter, set: setter }
+}

@@ -4,6 +4,7 @@ process.env.ESLINT_TSCONFIG = 'tsconfig.json'
 module.exports = {
   extends: '@antfu',
   rules: {
-    curly: 'error',
+    'curly': 'error',
+    '@typescript-eslint/no-unsafe-assignment': 'off',
   },
 }

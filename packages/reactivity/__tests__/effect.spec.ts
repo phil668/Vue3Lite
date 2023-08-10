@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { effect, reactive } from '../src/index'
+import { effect, reactive, stop } from '../src/index'
 
 describe('effect', () => {
   it('happy path', () => {
@@ -50,5 +50,33 @@ describe('effect', () => {
     expect(dummy).toBe(1)
     run()
     expect(dummy).toBe(2)
+  })
+
+  it('stop', () => {
+    let dummy
+    const obj = reactive({ foo: 1 })
+    const runner = effect(() => {
+      dummy = obj.foo
+    })
+    obj.foo = 2
+    expect(dummy).toBe(2)
+    stop(runner)
+    obj.foo = 3
+    expect(dummy).toBe(2)
+    runner()
+    expect(dummy).toBe(3)
+  })
+
+  it('onStop', () => {
+    let dummy
+    const obj = reactive({ foo: 1 })
+    const onStop = vi.fn()
+    const runner = effect(() => {
+      dummy = obj.foo
+    }, {
+      onStop,
+    })
+    stop(runner)
+    expect(onStop).toHaveBeenCalledTimes(1)
   })
 })
