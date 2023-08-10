@@ -30,3 +30,5 @@ function createMutableHandlers<T extends object>(): MutableHandlers<T> {
 
   return { get: getter, set: setter }
 }
+
+export { createMutableHandlers, createGetter }
