@@ -1,0 +1,9 @@
+{
+  "name": "@mini-vue-phil/shared",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "main": "./src/index.ts"
+}

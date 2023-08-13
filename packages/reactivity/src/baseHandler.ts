@@ -1,9 +1,13 @@
+import { isObject } from '@mini-vue-phil/shared'
 import { track, trigger } from './effect'
-import { ReactiveFlags } from './reactive'
+import { ReactiveFlags, reactive, readonly } from './reactive'
 
 function createGetter<T extends object>(isReadonly = false) {
   return (target: T, key: string) => {
     const value = Reflect.get(target, key)
+
+    if (isObject(value))
+      return isReadonly ? readonly(value as object) : reactive(value as object)
 
     if (key === ReactiveFlags.IS_REACTIVE)
       return !isReadonly

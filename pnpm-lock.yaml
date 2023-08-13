@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 importers:
 
   .:
@@ -17,7 +21,13 @@ importers:
         specifier: ^0.31.4
         version: 0.31.4
 
-  packages/reactivity: {}
+  packages/reactivity:
+    dependencies:
+      '@mini-vue-phil/shared':
+        specifier: workspace:^
+        version: link:../shared
+
+  packages/shared: {}
 
 packages:
 

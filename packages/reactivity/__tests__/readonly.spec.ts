@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { readonly } from '../src/reactive'
+import { isReadonly, readonly } from '../src/reactive'
 
 describe('effect', () => {
   it('happy path', () => {
@@ -7,5 +7,6 @@ describe('effect', () => {
     const wrapped = readonly(original)
     expect(wrapped).not.toBe(original)
     expect(wrapped.foo).toBe(1)
+    expect(isReadonly(wrapped.bar)).toBe(true)
   })
 })

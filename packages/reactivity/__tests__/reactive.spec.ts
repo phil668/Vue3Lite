@@ -13,4 +13,16 @@ describe('reactive', () => {
     expect(isReadonly(observed)).toBe(false)
     expect(isReadonly(readonly(observed))).toBe(true)
   })
+
+  it('nest', () => {
+    const original = {
+      nested: {
+        foo: 1,
+      },
+      array: [{ bar: 2 }],
+    }
+    const observed = reactive(original)
+    expect(isReactive(observed.nested)).toBe(true)
+    expect(isReactive(observed.array)).toBe(true)
+  })
 })
