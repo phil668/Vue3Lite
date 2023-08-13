@@ -12,6 +12,9 @@ interface Runner {
   effect?: ReactiveEffect
 }
 
+let activeEffectFn: ReactiveEffect
+let shouldTrack: boolean
+
 /**
  * @desc 收集数据更新需要执行的函数
  * @param fn
@@ -24,7 +27,6 @@ function effect<T = any>(fn: () => T, options?: EffectOptions) {
   return runner
 }
 
-let activeEffectFn: ReactiveEffect
 class ReactiveEffect<T = any> {
   private _fn: () => T
   public deps: (Set<ReactiveEffect>)[] = []
@@ -40,9 +42,15 @@ class ReactiveEffect<T = any> {
   }
 
   run() {
+    if (!this.active)
+      return this._fn()
+
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     activeEffectFn = this
-    return this._fn()
+    shouldTrack = true
+    const result = this._fn()
+    shouldTrack = false
+    return result
   }
 
   stop() {
@@ -67,6 +75,10 @@ const targetMap: TargetMap = new Map()
  * @param key
  */
 function track<T extends object>(tagret: T, key: string) {
+  if (!shouldTrack)
+    return
+  if (!activeEffectFn)
+    return
   let depsMap = targetMap.get(tagret)
   if (!depsMap) {
     depsMap = new Map()
@@ -78,8 +90,7 @@ function track<T extends object>(tagret: T, key: string) {
     deps = new Set()
     depsMap.set(key, deps)
   }
-  if (!activeEffectFn)
-    return
+
   deps.add(activeEffectFn)
   activeEffectFn.deps.push(deps)
 }
