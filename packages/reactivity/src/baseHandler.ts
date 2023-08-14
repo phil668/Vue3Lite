@@ -2,18 +2,21 @@ import { isObject } from '@mini-vue-phil/shared'
 import { track, trigger } from './effect'
 import { ReactiveFlags, reactive, readonly } from './reactive'
 
-function createGetter<T extends object>(isReadonly = false) {
+function createGetter<T extends object>(isReadonly = false, shallow = false) {
   return (target: T, key: string) => {
-    const value = Reflect.get(target, key)
-
-    if (isObject(value))
-      return isReadonly ? readonly(value as object) : reactive(value as object)
-
     if (key === ReactiveFlags.IS_REACTIVE)
       return !isReadonly
 
     else if (key === ReactiveFlags.IS_READONLY)
       return isReadonly
+
+    const value = Reflect.get(target, key)
+
+    if (shallow)
+      return value
+
+    if (isObject(value))
+      return isReadonly ? readonly(value as object) : reactive(value as object)
 
     if (!isReadonly)
       track(target, key)
@@ -42,4 +45,25 @@ function createMutableHandlers<T extends object>(): MutableHandlers<T> {
   return { get: getter, set: setter }
 }
 
-export { createMutableHandlers, createGetter }
+function createReadonlyHandlers<T extends object>() {
+  const getter = createGetter<T>(true)
+  return {
+    get: getter,
+    set(target: T, key: string) {
+      console.warn(`set ${key} fail,beacuse this is readonly`)
+      return true
+    },
+  }
+}
+
+function createShallowReadonlyHandlers<T extends object>() {
+  return {
+    get: createGetter<T>(true, true),
+    set(target: T, key: string) {
+      console.warn(`set ${key} fail,beacuse this is readonly`)
+      return true
+    },
+  }
+}
+
+export { createMutableHandlers, createGetter, createReadonlyHandlers, createShallowReadonlyHandlers }
