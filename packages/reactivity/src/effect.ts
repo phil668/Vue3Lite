@@ -75,9 +75,7 @@ const targetMap: TargetMap = new Map()
  * @param key
  */
 function track<T extends object>(tagret: T, key: string) {
-  if (!shouldTrack)
-    return
-  if (!activeEffectFn)
+  if (!isTracking())
     return
   let depsMap = targetMap.get(tagret)
   if (!depsMap) {
@@ -91,8 +89,16 @@ function track<T extends object>(tagret: T, key: string) {
     depsMap.set(key, deps)
   }
 
+  trackEffects(deps)
+}
+
+function trackEffects(deps: Set<ReactiveEffect>) {
   deps.add(activeEffectFn)
   activeEffectFn.deps.push(deps)
+}
+
+function isTracking() {
+  return shouldTrack && typeof activeEffectFn !== 'undefined'
 }
 
 /**
@@ -110,6 +116,10 @@ function trigger<T extends object>(target: T, key: string) {
   if (!deps)
     return
 
+  triggerEffects(deps)
+}
+
+function triggerEffects(deps: Set<ReactiveEffect>) {
   for (const fn of deps) {
     if (fn.scheduler)
       fn.scheduler()
@@ -123,4 +133,4 @@ function stop(runner: Runner) {
   runner.effect?.stop()
 }
 
-export { effect, trigger, track, stop }
+export { effect, trigger, track, stop, ReactiveEffect, trackEffects, isTracking, triggerEffects }
