@@ -12,8 +12,10 @@ import { reactive } from './reactive'
 class RefImpl {
   private _value: any
   private _deps: Set<ReactiveEffect> = new Set()
+  private _raw: any
   constructor(value: any) {
-    this._value = isObject(value) ? reactive(value) : value
+    this._raw = value
+    this._value = convert(value)
   }
 
   get value() {
@@ -24,12 +26,16 @@ class RefImpl {
   }
 
   set value(newValue: any) {
-    if (!hasChanged(this._value, newValue))
+    if (!hasChanged(this._raw, newValue))
       return
-
-    this._value = isObject(newValue) ? reactive(newValue) : newValue
+    this._raw = newValue
+    this._value = convert(newValue)
     triggerEffects(this._deps)
   }
+}
+
+function convert(value: any) {
+  return isObject(value) ? reactive(value) : value
 }
 
 function ref(value: any) {
