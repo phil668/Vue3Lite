@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { ref } from '../src/ref'
+import { isRef, ref, unRef } from '../src/ref'
 import { effect } from '../src'
 
 describe('ref', () => {
@@ -36,5 +36,18 @@ describe('ref', () => {
     expect(dummy).toBe(1)
     a.value.count = 2
     expect(dummy).toBe(2)
+  })
+
+  it('isRef', () => {
+    const a = ref({
+      count: 1,
+    })
+    expect(isRef(a)).toBe(true)
+    expect(isRef(123)).toBe(false)
+  })
+
+  it('unRef', () => {
+    const a = ref(1)
+    expect(unRef(a)).toBe(1)
   })
 })

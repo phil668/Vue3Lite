@@ -5,14 +5,19 @@ import { reactive } from './reactive'
 /**
  * ref的实现思路
  * vue响应式的实现思路 => 读取时进行拦截 并track => 设置时进行拦截 并trigger
- * reactive 基于proxy实现，可以实现对对象的读取和设置进行拦截
  * 如果是原始值类型的话，比如字符串，数字，布尔值，我们就可以利用class的get和set进行拦截
  */
+
+function ref(value: any) {
+  return new RefImpl(value)
+}
 
 class RefImpl {
   private _value: any
   private _deps: Set<ReactiveEffect> = new Set()
   private _raw: any
+  public isRef = true
+
   constructor(value: any) {
     this._raw = value
     this._value = convert(value)
@@ -38,8 +43,12 @@ function convert(value: any) {
   return isObject(value) ? reactive(value) : value
 }
 
-function ref(value: any) {
-  return new RefImpl(value)
+function isRef(ref: any) {
+  return ref instanceof RefImpl
 }
 
-export { ref }
+function unRef(ref: any) {
+  return isRef(ref) ? ref.value : ref
+}
+
+export { ref, isRef, unRef }
