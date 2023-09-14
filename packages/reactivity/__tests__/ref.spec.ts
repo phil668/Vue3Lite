@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { isRef, ref, unRef } from '../src/ref'
+import { isRef, proxyRefs, ref, unRef } from '../src/ref'
 import { effect } from '../src'
 
 describe('ref', () => {
@@ -49,5 +49,24 @@ describe('ref', () => {
   it('unRef', () => {
     const a = ref(1)
     expect(unRef(a)).toBe(1)
+  })
+
+  it('proxyRefs', () => {
+    const user = {
+      age: ref(10),
+      name: 'phil',
+    }
+    const proxyUser = proxyRefs(user)
+    expect(user.age.value).toBe(10)
+    expect(proxyUser.age).toBe(10)
+    expect(proxyUser.name).toBe('phil')
+
+    proxyUser.age = 20
+    expect(proxyUser.age).toBe(20)
+    expect(user.age.value).toBe(20)
+
+    proxyUser.age = ref(10)
+    expect(proxyUser.age).toBe(10)
+    expect(user.age.value).toBe(10)
   })
 })
