@@ -13,7 +13,7 @@ function readonly<T extends object>(raw: T): T {
   return new Proxy(raw, createReadonlyHandlers<T>())
 }
 
-function shallowReadonly<T extends Object>(raw: T): T {
+function shallowReadonly<T extends object>(raw: T): T {
   return new Proxy(raw, createShallowReadonlyHandlers())
 }
 

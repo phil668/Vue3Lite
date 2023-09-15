@@ -22,7 +22,7 @@ describe('effect', () => {
       foo++
       return 'foo'
     })
-    const runner = effect<String>(fn)
+    const runner = effect<string>(fn)
     expect(fn).toHaveBeenCalledTimes(1)
     const bar = runner()
     expect(fn).toHaveBeenCalledTimes(2)
