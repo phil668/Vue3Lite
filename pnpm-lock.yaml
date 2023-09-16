@@ -27,6 +27,12 @@ importers:
         specifier: workspace:^
         version: link:../shared
 
+  packages/runtime-core:
+    dependencies:
+      '@mini-vue-phil/shared':
+        specifier: workspace:^
+        version: link:../shared
+
   packages/shared: {}
 
 packages:
