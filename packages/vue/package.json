@@ -1,19 +1,20 @@
 {
-  "name": "@mini-vue-phil/reactivity",
+  "name": "@mini-vue-phil/vue",
   "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "ISC",
   "keywords": [],
   "main": "index.js",
+  "dependencies": {
+    "@mini-vue-phil/reactivity": "workspace:^",
+    "@mini-vue-phil/runtime-core": "workspace:^"
+  },
   "buildOptions": {
-    "name": "VueReactivity",
+    "name": "vue",
     "formats": [
       "esm",
       "cjs"
     ]
-  },
-  "dependencies": {
-    "@mini-vue-phil/shared": "workspace:^"
   }
 }

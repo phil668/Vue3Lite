@@ -5,5 +5,12 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "./src/index.ts"
+  "main": "./src/index.ts",
+  "buildOptions": {
+    "name": "vueShared",
+    "formats": [
+      "esm",
+      "cjs"
+    ]
+  }
 }

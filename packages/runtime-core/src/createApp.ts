@@ -10,3 +10,5 @@ function createApp(rootComponent) {
     },
   }
 }
+
+export { createApp }

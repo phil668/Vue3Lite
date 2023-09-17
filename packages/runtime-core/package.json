@@ -6,6 +6,13 @@
   "license": "ISC",
   "keywords": [],
   "main": "index.js",
+  "buildOptions": {
+    "name": "vueRuntimeCore",
+    "formats": [
+      "esm",
+      "cjs"
+    ]
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
