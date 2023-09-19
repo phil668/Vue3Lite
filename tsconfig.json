@@ -32,6 +32,7 @@
     "packages/*/src",
     "packages/*/__tests__",
     "packages/dts-test",
-    "packages/vue/jsx-runtime"
+    "packages/vue/jsx-runtime",
+    "scripts/*.ts"
   ]
 }
