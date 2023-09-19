@@ -7,10 +7,9 @@ const __dirname = fileURLToPath(new URL('.', import.meta.url))
 
 async function run() {
   const targets = await getAllTargets()
-  //   console.log('targets', targets)
-  //   for (const target of targets)
-  //     await build(target)
-  await build('reactivity')
+  console.log('targets', targets)
+  for (const target of targets)
+    await build(target)
 }
 
 async function build(target: string) {

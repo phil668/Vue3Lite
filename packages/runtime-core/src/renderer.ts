@@ -1,10 +1,10 @@
 import { createComponentInstance, setupComponent } from './component'
 
-function render(vnode, container) {
+function render(vnode: any, container: any) {
   // patch
 }
 
-function patch(vnode, container) {
+function patch(vnode: any, container: any) {
   // 处理组件
   processComponent(vnode, container)
 }
@@ -18,4 +18,4 @@ function mountComponent(vnode: any, container: any) {
   setupComponent(instance)
 }
 
-export { render }
+export { render, patch }

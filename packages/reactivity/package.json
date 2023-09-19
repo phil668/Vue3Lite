@@ -5,7 +5,9 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "dist/reactivity.cjs.js",
+  "module": "dist/reactivity.esm.js",
+  "types": "dist/index.d.ts",
   "buildOptions": {
     "name": "VueReactivity",
     "formats": [

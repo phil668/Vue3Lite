@@ -5,7 +5,9 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "dist/runtime-core.cjs.js",
+  "module": "dist/runtime-core.esm.js",
+  "types": "dist/index.d.ts",
   "buildOptions": {
     "name": "vueRuntimeCore",
     "formats": [

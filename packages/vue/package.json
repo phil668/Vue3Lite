@@ -5,7 +5,9 @@
   "author": "",
   "license": "ISC",
   "keywords": [],
-  "main": "index.js",
+  "main": "dist/vue.cjs.js",
+  "module": "dist/vue.esm.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "@mini-vue-phil/reactivity": "workspace:^",
     "@mini-vue-phil/runtime-core": "workspace:^"

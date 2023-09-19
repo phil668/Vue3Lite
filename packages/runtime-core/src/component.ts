@@ -1,11 +1,11 @@
 import { isObject } from '@mini-vue-phil/shared'
 
-function createComponentInstance(vnode) {
+function createComponentInstance(vnode: any) {
   const component = {
     vnode,
     type: vnode.type,
   }
-  return vnode
+  return component
 }
 
 function setupComponent(instance: any) {
@@ -32,7 +32,7 @@ function handleSetupResult(instance: any, setupResult: any) {
   finishComponentSetup(instance)
 }
 
-function finishComponentSetup(instance) {
+function finishComponentSetup(instance: any) {
   const Component = instance.type
   if (Component.render)
     instance.render = Component.render
