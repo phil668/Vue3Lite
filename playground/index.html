@@ -11,19 +11,19 @@
     <div id="app"></div>
     <script src="../packages/vue/dist/vue.global.js"></script>
     <script>
-        console.log('miniVue', miniVue.createApp)
-        // const App = {
-        //   setup() {
-        //     return {
-        //       message: 'phil',
-        //     }
-        //   },
-        //   render() {
-        //     return h('div', `hello${this.message}`)
-        //   },
-        // }
+        const App = {
+          setup() {
+            return {
+              message: 'phil',
+            }
+          },
+          render() {
+            console.log('miniVue.h', miniVue.h)
+            return miniVue.h('div', `hello${this.message}`)
+          },
+        }
 
-        // createApp(App).mount('#app')
+        miniVue.createApp(App).mount('#app')
     </script>
 </body>
 

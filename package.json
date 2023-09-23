@@ -8,8 +8,8 @@
   "keywords": [],
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
-    "build": "esno ./scripts/build.ts"
+    "build": "esno ./scripts/build.ts",
+    "test": "vitest"
   },
   "dependencies": {
     "rollup": "^3.29.2"
