@@ -1,7 +1,7 @@
 import { isObject } from '@mini-vue-phil/shared'
-import type { VNode } from './types'
+import type { CompInstance, VNode } from './types'
 
-function createComponentInstance(vnode: VNode) {
+function createComponentInstance(vnode: VNode): CompInstance {
   const component = {
     vnode,
     type: vnode.type,

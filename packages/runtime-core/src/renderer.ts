@@ -1,19 +1,18 @@
 import { isObject } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
-import type { VNode } from './types'
+import type { CompInstance, VNode } from './types'
 
 function render(vnode: VNode, container: HTMLElement) {
   patch(vnode, container)
 }
 
 function patch(vnode: VNode, container: HTMLElement) {
-  if (vnode.type === 'string') {
+  if (typeof vnode?.type === 'string')
     processElement(vnode, container)
-  }
-  else {
+
+  else
     // 处理组件
     processComponent(vnode, container)
-  }
 }
 
 function processElement(vnode: VNode, container: HTMLElement) {
@@ -25,13 +24,17 @@ function processElement(vnode: VNode, container: HTMLElement) {
 
   if (props && isObject(props)) {
     Object.entries(props).forEach(([key, value]) => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       el.setAttribute(key, value)
     })
   }
 
-  if (Array.isArray(children))
+  if (children && !isObject(children))
+    el.innerText = children as string
+
+  else if (Array.isArray(children))
     mountChildren(vnode, el)
+
+  container.appendChild(el)
 }
 
 function mountChildren(vnode: VNode, container: HTMLElement) {
@@ -50,9 +53,11 @@ function mountComponent(vnode: VNode, container: HTMLElement) {
   setupRenderEffect(instance, container)
 }
 
-function setupRenderEffect(instance: any, container: HTMLElement) {
-  const subTree = instance.render()
-  patch(subTree, container)
+function setupRenderEffect(instance: CompInstance, container: HTMLElement) {
+  if (instance.render) {
+    const subTree = instance.render()
+    patch(subTree, container)
+  }
 }
 
 export { render, patch }

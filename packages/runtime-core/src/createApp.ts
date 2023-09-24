@@ -3,13 +3,19 @@ import { createVnode } from './vnode'
 
 function createApp(rootComponent: any) {
   return {
-    mount(rootContainer: any) {
-      // vnode
-      if (typeof rootContainer === 'string')
-        rootContainer = document.querySelector(rootContainer)
-      console.log('rootContainer', rootContainer)
+    mount(rootContainer: string | HTMLElement) {
+      let container: HTMLElement
+      if (typeof rootContainer === 'string') {
+        const el = document.querySelector(rootContainer) as HTMLElement
+        if (!el)
+          return
+        container = el
+      }
+      else
+        container = rootContainer
+
       const vnode = createVnode(rootComponent)
-      render(vnode, rootContainer)
+      render(vnode, container)
     },
   }
 }

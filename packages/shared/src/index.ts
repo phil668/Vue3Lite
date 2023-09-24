@@ -6,4 +6,8 @@ function hasChanged(value: any, newValue: any) {
   return !Object.is(value, newValue)
 }
 
-export { isObject, hasChanged }
+function isString(value: any) {
+  return typeof value === 'string'
+}
+
+export { isObject, hasChanged, isString }
