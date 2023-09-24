@@ -16,11 +16,15 @@ function patch(vnode: VNode, container: HTMLElement) {
 }
 
 function processElement(vnode: VNode, container: HTMLElement) {
+  mountElement(vnode, container)
+}
+
+function mountElement(vnode: VNode, container: HTMLElement) {
   if (typeof vnode.type !== 'string')
     return
 
   const { type, children, props } = vnode
-  const el = document.createElement(type)
+  const el = (vnode.el = document.createElement(type))
 
   if (props && isObject(props)) {
     Object.entries(props).forEach(([key, value]) => {
@@ -50,13 +54,14 @@ function processComponent(vnode: VNode, container: HTMLElement) {
 function mountComponent(vnode: VNode, container: HTMLElement) {
   const instance = createComponentInstance(vnode)
   setupComponent(instance)
-  setupRenderEffect(instance, container)
+  setupRenderEffect(instance, vnode, container)
 }
 
-function setupRenderEffect(instance: CompInstance, container: HTMLElement) {
+function setupRenderEffect(instance: CompInstance, vnode: VNode, container: HTMLElement) {
   if (instance.render) {
-    const subTree = instance.render()
+    const subTree = instance.render.call(instance.proxy)
     patch(subTree, container)
+    vnode.el = subTree.el
   }
 }
 

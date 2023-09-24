@@ -5,6 +5,7 @@ function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNo
     type,
     props,
     children,
+    el: null,
   }
 }
 
