@@ -1,4 +1,4 @@
-import { isObject } from '@mini-vue-phil/shared'
+import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
 import type { CompInstance, VNode } from './types'
 
@@ -7,12 +7,14 @@ function render(vnode: VNode, container: HTMLElement) {
 }
 
 function patch(vnode: VNode, container: HTMLElement) {
-  if (typeof vnode?.type === 'string')
+  const { shapeFlag } = vnode
+  if (shapeFlag & ShapeFlags.ELEMENT)
     processElement(vnode, container)
 
-  else
-    // 处理组件
+  else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
     processComponent(vnode, container)
+
+  // 处理组件
 }
 
 function processElement(vnode: VNode, container: HTMLElement) {
@@ -23,7 +25,7 @@ function mountElement(vnode: VNode, container: HTMLElement) {
   if (typeof vnode.type !== 'string')
     return
 
-  const { type, children, props } = vnode
+  const { type, children, props, shapeFlag } = vnode
   const el = (vnode.el = document.createElement(type))
 
   if (props && isObject(props)) {
@@ -32,10 +34,10 @@ function mountElement(vnode: VNode, container: HTMLElement) {
     })
   }
 
-  if (children && !isObject(children))
+  if (children && shapeFlag & ShapeFlags.TEXT_CHILDREN)
     el.innerText = children as string
 
-  else if (Array.isArray(children))
+  else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN)
     mountChildren(vnode, el)
 
   container.appendChild(el)

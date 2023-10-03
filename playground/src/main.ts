@@ -16,7 +16,7 @@ const App = {
     ])
   },
 }
-
+debugger
 createApp(App).mount('#app')
 
 console.log(window.self.$el)

@@ -13,7 +13,6 @@ function createApp(rootComponent: any) {
       }
       else
         container = rootContainer
-
       const vnode = createVnode(rootComponent)
       render(vnode, container)
     },

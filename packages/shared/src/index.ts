@@ -11,3 +11,4 @@ function isString(value: any) {
 }
 
 export { isObject, hasChanged, isString }
+export * from './shapeFlag'

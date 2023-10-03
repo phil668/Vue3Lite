@@ -22,6 +22,7 @@ type VNodeTypes = string | object
 export interface VNode {
   type: VNodeTypes
   el: null | HTMLElement
+  shapeFlag: number
   props?: object
   children?: (string | VNode)[] | string | VNode[]
   render?: () => VNode
