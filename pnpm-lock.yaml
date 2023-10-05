@@ -54,6 +54,9 @@ importers:
 
   packages/runtime-core:
     dependencies:
+      '@mini-vue-phil/reactivity':
+        specifier: workspace:^
+        version: link:../reactivity
       '@mini-vue-phil/shared':
         specifier: workspace:^
         version: link:../shared

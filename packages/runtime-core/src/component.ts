@@ -1,4 +1,5 @@
 import { isObject } from '@mini-vue-phil/shared'
+import { shallowReadonly } from '@mini-vue-phil/reactivity'
 import type { CompInstance, VNode } from './types'
 import { publicInstanceHandler } from './publicComponentInstance'
 import { initProps } from './componentProps'
@@ -25,7 +26,7 @@ function setupStatefulComponent(instance: any) {
   instance.proxy = new Proxy({ _: instance }, publicInstanceHandler)
 
   if (component?.setup) {
-    const setupResult = component.setup(instance.props)
+    const setupResult = component.setup(shallowReadonly(instance.props))
 
     handleSetupResult(instance, setupResult)
   }
