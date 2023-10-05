@@ -1,4 +1,4 @@
-import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
+import { ShapeFlags, isObject, isOn } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
 import type { CompInstance, VNode } from './types'
 
@@ -28,12 +28,20 @@ function mountElement(vnode: VNode, container: HTMLElement) {
   const { type, children, props, shapeFlag } = vnode
   const el = (vnode.el = document.createElement(type))
 
+  // props
   if (props && isObject(props)) {
     Object.entries(props).forEach(([key, value]) => {
-      el.setAttribute(key, value)
+      // handle events
+      if (isOn(key)) {
+        const eventName = key.slice(2).toLowerCase()
+        el.addEventListener(eventName, value)
+      }
+      else
+        el.setAttribute(key, value)
     })
   }
 
+  // children
   if (children && shapeFlag & ShapeFlags.TEXT_CHILDREN)
     el.innerText = children as string
 
@@ -45,7 +53,7 @@ function mountElement(vnode: VNode, container: HTMLElement) {
 
 function mountChildren(vnode: VNode, container: HTMLElement) {
   Array.isArray(vnode.children) && vnode.children.forEach((v) => {
-    patch(v, container)
+    patch(v as VNode, container)
   })
 }
 

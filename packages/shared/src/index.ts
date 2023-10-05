@@ -10,5 +10,9 @@ function isString(value: any) {
   return typeof value === 'string'
 }
 
-export { isObject, hasChanged, isString }
+function isOn(key: string) {
+  return /^on[A-Z]/.test(key)
+}
+
+export { isObject, hasChanged, isString, isOn }
 export * from './shapeFlag'
