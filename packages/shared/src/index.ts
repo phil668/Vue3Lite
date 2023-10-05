@@ -14,5 +14,8 @@ function isOn(key: string) {
   return /^on[A-Z]/.test(key)
 }
 
-export { isObject, hasChanged, isString, isOn }
+function hasOwn(obj: object, key: string) {
+  return isObject(obj) && Object.hasOwn.call(obj, obj, key)
+}
+export { isObject, hasChanged, isString, isOn, hasOwn }
 export * from './shapeFlag'

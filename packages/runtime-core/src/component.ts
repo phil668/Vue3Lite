@@ -1,6 +1,7 @@
 import { isObject } from '@mini-vue-phil/shared'
 import type { CompInstance, VNode } from './types'
 import { publicInstanceHandler } from './publicComponentInstance'
+import { initProps } from './componentProps'
 
 function createComponentInstance(vnode: VNode): CompInstance {
   const component = {
@@ -13,7 +14,7 @@ function createComponentInstance(vnode: VNode): CompInstance {
 
 function setupComponent(instance: CompInstance) {
   // TODO
-  // initProps()
+  initProps(instance, instance.vnode.props || {})
   // initSlots()
   setupStatefulComponent(instance)
 }
@@ -24,7 +25,7 @@ function setupStatefulComponent(instance: any) {
   instance.proxy = new Proxy({ _: instance }, publicInstanceHandler)
 
   if (component?.setup) {
-    const setupResult = component.setup()
+    const setupResult = component.setup(instance.props)
 
     handleSetupResult(instance, setupResult)
   }
