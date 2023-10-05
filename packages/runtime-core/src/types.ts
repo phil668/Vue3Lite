@@ -33,6 +33,7 @@ export interface CompInstance {
   type: VNodeTypes
   setupState: null | object
   props?: object
+  emit?: (...args: any) => void | any
   render?: () => VNode
   proxy?: Object
   name?: string

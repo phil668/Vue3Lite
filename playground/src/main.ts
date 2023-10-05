@@ -14,14 +14,22 @@ const App = {
       h('div', {
         class: 'red',
         onClick() {
-          console.log('click')
+          console.log('click', this.message)
         },
         onMousedown() {
           console.log('mouseDown')
         },
       }, this.message),
-      h('div', { class: 'green' }, '123456'),
-      h(Foo, { count: 1 }),
+      h('div', { class: 'green' }, this.message),
+      h(Foo, {
+        count: 1,
+        onAdd(a, b, c) {
+          console.log('onAdd', a, b, c)
+        },
+        onAddFoo(a, b, c) {
+          console.log('onAddFoo', a, b, c)
+        },
+      }),
     ])
   },
 }
