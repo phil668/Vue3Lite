@@ -4,6 +4,7 @@ import type { CompInstance, VNode } from './types'
 import { publicInstanceHandler } from './publicComponentInstance'
 import { initProps } from './componentProps'
 import { emit } from './componentEmit'
+import { initSlots } from './componentSlots'
 
 function createComponentInstance(vnode: VNode): CompInstance {
   const compInstance: CompInstance = {
@@ -11,6 +12,7 @@ function createComponentInstance(vnode: VNode): CompInstance {
     type: vnode.type,
     setupState: null,
     emit: () => {},
+    slots: {},
   }
   compInstance.emit = emit.bind(null, compInstance)
 
@@ -19,7 +21,7 @@ function createComponentInstance(vnode: VNode): CompInstance {
 
 function setupComponent(instance: CompInstance) {
   initProps(instance, instance.vnode.props || {})
-  // initSlots()
+  initSlots(instance, instance.vnode.children)
   setupStatefulComponent(instance)
 }
 

@@ -5,9 +5,6 @@ const Foo = {
   setup(props, { emit }) {
     props.count++
     const handleClick = () => {
-      console.log('handleCLick')
-      // console.log('emit', emit)
-      // emit('add', 1, 2, 3, 4)
       emit('add-foo', 1, 2, 3, 4)
     }
     return { handleClick }
