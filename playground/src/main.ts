@@ -10,7 +10,8 @@ const App = {
   },
   render(): any {
     // this.$el => 获取组件的根元素的dom
-    return h('div', { class: 'app' }, [
+    return h('div', { class: 'app' },
+      [
       // h('div', {
       //   class: 'red',
       //   onClick() {
@@ -31,11 +32,13 @@ const App = {
       //   },
       // }),
       // h(Slot, {}, [h('p', {}, 'slot children'), h('p', {}, 'another slot children')]),
-      h(Slot, {}, {
-        header: h('p', {}, 'slot children header'),
-        footer: h('p', {}, 'slot children footer'),
-      }),
-    ])
+        h(Slot, {}, {
+          header: h('p', {}, 'slot children header'),
+          footer: h('p', {}, 'slot children footer'),
+        }),
+      ],
+    )
   },
 }
+
 createApp(App).mount('#app')
