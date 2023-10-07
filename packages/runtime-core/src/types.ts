@@ -1,6 +1,6 @@
 type VNodeTypes = string | object
 
-export type Slots = Record<string, VNode[]>
+export type Slots = Record<string, (...args: any[]) => VNode[]>
 
 export interface VNode {
   type: VNodeTypes

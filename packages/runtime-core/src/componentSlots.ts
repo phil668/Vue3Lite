@@ -1,4 +1,4 @@
-import { isObject } from '@mini-vue-phil/shared'
+import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import type { CompInstance, Slots, VNode } from './types'
 
 /**
@@ -10,7 +10,9 @@ import type { CompInstance, Slots, VNode } from './types'
  * @returns
  */
 function initSlots(instance: CompInstance, children: VNode['children']) {
-  instance.slots = normalizeObjectSlots(children)
+  const { vnode } = instance
+  if (vnode.shapeFlag & ShapeFlags.SLOT_CHILDREN)
+    instance.slots = normalizeObjectSlots(children)
 }
 
 function normalizeObjectSlots(children: VNode['children']): Slots {
@@ -20,7 +22,7 @@ function normalizeObjectSlots(children: VNode['children']): Slots {
   for (const key in (children as object)) {
     const value = (children as any)[key]
     // children要么是text_children 要么是array_children
-    slots[key] = normalizeSlotValue(value)
+    slots[key] = (props: any) => normalizeSlotValue(value(props))
   }
   return slots
 }

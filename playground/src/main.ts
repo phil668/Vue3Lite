@@ -31,10 +31,9 @@ const App = {
       //     console.log('onAddFoo', a, b, c)
       //   },
       // }),
-      // h(Slot, {}, [h('p', {}, 'slot children'), h('p', {}, 'another slot children')]),
         h(Slot, {}, {
-          header: h('p', {}, 'slot children header'),
-          footer: h('p', {}, 'slot children footer'),
+          header: ({ age }) => h('p', {}, `slot children header${age}`),
+          footer: ({ age }) => h('p', {}, `slot children footer${age}`),
         }),
       ],
     )

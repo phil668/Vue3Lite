@@ -1,11 +1,13 @@
-import type { Slots } from '../types'
+import type { Slots, VNode } from '../types'
 import { createVnode } from '../vnode'
 
-function renderSlots(slots: Slots, slotName: string) {
+function renderSlots(slots: Slots, slotName: string, props: VNode['props']) {
   if (!slots)
     return {}
-  if (slots[slotName])
-    return createVnode('div', {}, slots[slotName])
+  const slot = slots[slotName]
+  console.log('slot', slot, props)
+  if (typeof slot === 'function')
+    return createVnode('div', {}, slot(props))
 
   else
     return {}

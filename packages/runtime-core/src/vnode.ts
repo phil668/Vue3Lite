@@ -1,4 +1,4 @@
-import { ShapeFlags } from '@mini-vue-phil/shared'
+import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import type { VNode } from './types'
 
 function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNode['children']): VNode {
@@ -16,6 +16,10 @@ function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNo
   else if (Array.isArray(children))
     vnode.shapeFlag = vnode.shapeFlag | ShapeFlags.ARRAY_CHILDREN
 
+  if (vnode.shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+    if (isObject(children))
+      vnode.shapeFlag = vnode.shapeFlag | ShapeFlags.SLOT_CHILDREN
+  }
   return vnode
 }
 

@@ -5,10 +5,10 @@ const Slot = {
   setup() {
   },
   render() {
-    console.log(this.$slots)
+    const age = 18
     return h('div', {
       class: 'slot-container',
-    }, [renderSlots(this.$slots, 'header'), h('div', {}, '1'), renderSlots(this.$slots, 'footer')])
+    }, [renderSlots(this.$slots, 'header', { age: 18 }), h('div', {}, '1'), renderSlots(this.$slots, 'footer', { age: 18 })])
   },
 }
 
