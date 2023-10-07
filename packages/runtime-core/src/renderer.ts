@@ -1,24 +1,37 @@
 import { ShapeFlags, isObject, isOn } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
 import type { CompInstance, VNode } from './types'
+import { FRAGMENT } from './vnode'
 
 function render(vnode: VNode, container: HTMLElement) {
   patch(vnode, container)
 }
 
 function patch(vnode: VNode, container: HTMLElement) {
-  const { shapeFlag } = vnode
-  if (shapeFlag & ShapeFlags.ELEMENT)
-    processElement(vnode, container)
+  const { type, shapeFlag } = vnode
+  switch (type) {
+    case FRAGMENT:
+      processFragment(vnode, container)
+      break
 
-  else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
-    processComponent(vnode, container)
+    default:
+      if (shapeFlag & ShapeFlags.ELEMENT)
+        processElement(vnode, container)
 
-  // 处理组件
+      else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
+        processComponent(vnode, container)
+
+      // 处理组件
+      break
+  }
 }
 
 function processElement(vnode: VNode, container: HTMLElement) {
   mountElement(vnode, container)
+}
+
+function processFragment(vnode: VNode, container: HTMLElement) {
+  mountChildren(vnode, container)
 }
 
 function mountElement(vnode: VNode, container: HTMLElement) {

@@ -1,6 +1,8 @@
 import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import type { VNode } from './types'
 
+export const FRAGMENT = Symbol('fragment')
+
 function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNode['children']): VNode {
   const vnode: VNode = {
     type,

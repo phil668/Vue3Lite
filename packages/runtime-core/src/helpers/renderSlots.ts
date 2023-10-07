@@ -1,5 +1,5 @@
 import type { Slots, VNode } from '../types'
-import { createVnode } from '../vnode'
+import { FRAGMENT, createVnode } from '../vnode'
 
 function renderSlots(slots: Slots, slotName: string, props: VNode['props']) {
   if (!slots)
@@ -7,7 +7,7 @@ function renderSlots(slots: Slots, slotName: string, props: VNode['props']) {
   const slot = slots[slotName]
   console.log('slot', slot, props)
   if (typeof slot === 'function')
-    return createVnode('div', {}, slot(props))
+    return createVnode(FRAGMENT, {}, slot(props))
 
   else
     return {}

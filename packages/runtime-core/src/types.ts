@@ -1,4 +1,4 @@
-type VNodeTypes = string | object
+type VNodeTypes = string | object | symbol
 
 export type Slots = Record<string, (...args: any[]) => VNode[]>
 
