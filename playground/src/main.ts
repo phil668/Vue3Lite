@@ -1,4 +1,4 @@
-import { createApp, h } from '@mini-vue-phil/runtime-core'
+import { createApp, createTextVNode, h } from '@mini-vue-phil/runtime-core'
 import Slot from './Slot'
 
 const App = {
@@ -32,7 +32,7 @@ const App = {
       //   },
       // }),
         h(Slot, {}, {
-          header: ({ age }) => h('p', {}, `slot children header${age}`),
+          header: ({ age }) => [h('p', {}, `slot children header${age}`), createTextVNode('this is a text node')],
           footer: ({ age }) => h('p', {}, `slot children footer${age}`),
         }),
       ],

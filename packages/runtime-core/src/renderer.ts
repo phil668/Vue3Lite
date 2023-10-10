@@ -1,7 +1,7 @@
 import { ShapeFlags, isObject, isOn } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
 import type { CompInstance, VNode } from './types'
-import { FRAGMENT } from './vnode'
+import { Fragment, Text } from './vnode'
 
 function render(vnode: VNode, container: HTMLElement) {
   patch(vnode, container)
@@ -10,10 +10,13 @@ function render(vnode: VNode, container: HTMLElement) {
 function patch(vnode: VNode, container: HTMLElement) {
   const { type, shapeFlag } = vnode
   switch (type) {
-    case FRAGMENT:
+    case Fragment:
       processFragment(vnode, container)
       break
 
+    case Text:
+      processText(vnode, container)
+      break
     default:
       if (shapeFlag & ShapeFlags.ELEMENT)
         processElement(vnode, container)
@@ -32,6 +35,12 @@ function processElement(vnode: VNode, container: HTMLElement) {
 
 function processFragment(vnode: VNode, container: HTMLElement) {
   mountChildren(vnode, container)
+}
+
+function processText(vnode: VNode, container: HTMLElement) {
+  const { children } = vnode
+  const textNode = vnode.el = document.createTextNode(children as string) as any
+  container.append(textNode)
 }
 
 function mountElement(vnode: VNode, container: HTMLElement) {

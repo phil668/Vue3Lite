@@ -1,7 +1,8 @@
 import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import type { VNode } from './types'
 
-export const FRAGMENT = Symbol('fragment')
+export const Fragment = Symbol('fragment')
+export const Text = Symbol('text')
 
 function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNode['children']): VNode {
   const vnode: VNode = {
@@ -25,8 +26,12 @@ function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNo
   return vnode
 }
 
+function createTextVNode(text: string) {
+  return createVnode(Text, {}, text)
+}
+
 function getShapeFlag(type: VNode['type']) {
   return typeof type === 'string' ? ShapeFlags.ELEMENT : ShapeFlags.STATEFUL_COMPONENT
 }
 
-export { createVnode }
+export { createVnode, createTextVNode }

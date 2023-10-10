@@ -2,12 +2,16 @@ type VNodeTypes = string | object | symbol
 
 export type Slots = Record<string, (...args: any[]) => VNode[]>
 
+export interface SlotRaw {
+  [slotName: string]: unknown
+}
+
 export interface VNode {
   type: VNodeTypes
   el: null | HTMLElement
   shapeFlag: number
   props?: object
-  children?: (string | VNode)[] | string | VNode | Record<string, VNode>
+  children?: (string | VNode)[] | string | VNode | Record<string, VNode> | SlotRaw
   render?: () => VNode
 }
 
