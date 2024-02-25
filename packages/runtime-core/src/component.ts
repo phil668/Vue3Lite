@@ -30,8 +30,11 @@ function setupStatefulComponent(instance: any) {
 
   instance.proxy = new Proxy({ _: instance }, publicInstanceHandler)
 
+  //  调用setup函数
   if (component?.setup) {
+    setCurrentInstance(instance)
     const setupResult = component.setup(shallowReadonly(instance.props), { emit: instance.emit })
+    setCurrentInstance(null)
 
     handleSetupResult(instance, setupResult)
   }
@@ -50,4 +53,14 @@ function finishComponentSetup(instance: CompInstance) {
     instance.render = Component.render
 }
 
-export { createComponentInstance, setupComponent }
+let currentInstance: CompInstance | null = null
+
+function getCurrentInstance() {
+  return currentInstance
+}
+
+function setCurrentInstance(instance: CompInstance | null) {
+  currentInstance = instance
+}
+
+export { createComponentInstance, setupComponent, getCurrentInstance }

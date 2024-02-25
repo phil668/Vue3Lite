@@ -1,9 +1,11 @@
-import { createApp, createTextVNode, h } from '@mini-vue-phil/runtime-core'
+import { createApp, createTextVNode, getCurrentInstance, h } from '@mini-vue-phil/runtime-core'
 import Slot from './Slot'
 
 const App = {
   name: 'App',
   setup() {
+    const instance = getCurrentInstance()
+    console.log('instance', instance)
     return {
       message: 'phil',
     }

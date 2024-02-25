@@ -17,6 +17,7 @@ function patch(vnode: VNode, container: HTMLElement) {
     case Text:
       processText(vnode, container)
       break
+
     default:
       if (shapeFlag & ShapeFlags.ELEMENT)
         processElement(vnode, container)
