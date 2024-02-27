@@ -1,4 +1,4 @@
-import { h } from '@mini-vue-phil/runtime-core'
+import { h } from '@mini-vue-phil/vue'
 
 const Foo = {
   name: 'Foo',

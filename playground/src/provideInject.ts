@@ -1,4 +1,4 @@
-import { h, inject, provide } from '@mini-vue-phil/runtime-core'
+import { h, inject, provide } from '@mini-vue-phil/vue'
 
 const Counsumer = {
   name: 'Counsumer',

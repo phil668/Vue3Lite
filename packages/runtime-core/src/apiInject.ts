@@ -8,8 +8,6 @@ function provide(key: string, value: unknown) {
   const provides: any = instance.provides
 
   provides[key] = value
-
-  console.log('provides', provides)
 }
 
 function inject(key: string) {

@@ -10,7 +10,8 @@
     "dev": "vite dev"
   },
   "dependencies": {
-    "@mini-vue-phil/runtime-core": "workspace:^"
+    "@mini-vue-phil/runtime-core": "workspace:^",
+    "@mini-vue-phil/vue": "workspace:^"
   },
   "devDependencies": {
     "vite": "^4.4.9"

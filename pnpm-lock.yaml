@@ -61,6 +61,18 @@ importers:
         specifier: workspace:^
         version: link:../shared
 
+  packages/runtime-dom:
+    dependencies:
+      '@mini-vue-phil/reactivity':
+        specifier: workspace:^
+        version: link:../reactivity
+      '@mini-vue-phil/runtime-core':
+        specifier: workspace:^
+        version: link:../runtime-core
+      '@mini-vue-phil/shared':
+        specifier: workspace:^
+        version: link:../shared
+
   packages/shared: {}
 
   packages/vue:
@@ -71,12 +83,18 @@ importers:
       '@mini-vue-phil/runtime-core':
         specifier: workspace:^
         version: link:../runtime-core
+      '@mini-vue-phil/runtime-dom':
+        specifier: workspace:^
+        version: link:../runtime-dom
 
   playground:
     dependencies:
       '@mini-vue-phil/runtime-core':
         specifier: workspace:^
         version: link:../packages/runtime-core
+      '@mini-vue-phil/vue':
+        specifier: workspace:^
+        version: link:../packages/vue
     devDependencies:
       vite:
         specifier: ^4.4.9

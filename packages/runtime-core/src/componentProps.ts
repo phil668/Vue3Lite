@@ -1,6 +1,6 @@
-import type { CompInstance } from './types'
+import type { ComponentInternalInstance } from './types'
 
-function initProps(instance: CompInstance, rawProps: object) {
+function initProps(instance: ComponentInternalInstance, rawProps: object) {
   instance.props = rawProps
 }
 

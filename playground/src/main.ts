@@ -1,6 +1,5 @@
-import { createApp, createTextVNode, getCurrentInstance, h } from '@mini-vue-phil/runtime-core'
+import { createApp, createTextVNode, getCurrentInstance, h } from '@mini-vue-phil/vue'
 import Slot from './Slot'
-import provideInject from './provideInject'
 
 const App = {
   name: 'App',
@@ -43,4 +42,4 @@ const App = {
   },
 }
 
-createApp(provideInject).mount('#app')
+createApp(App).mount('#app')

@@ -1,6 +1,6 @@
-import type { CompInstance } from './types'
+import type { ComponentInternalInstance } from './types'
 
-function emit(instance: CompInstance, event: string, ...args: any[]) {
+function emit(instance: ComponentInternalInstance, event: string, ...args: any[]) {
   const { props } = instance
   // find corresponding event from props
   const eventName = convertEventName(event)

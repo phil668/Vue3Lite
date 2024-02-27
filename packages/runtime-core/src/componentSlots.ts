@@ -1,5 +1,5 @@
 import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
-import type { CompInstance, Slots, VNode } from './types'
+import type { ComponentInternalInstance, Slots, VNode } from './types'
 
 /**
  * slots 的功能其实就是组件的children 我们需要将vnode内的children取出来，挂载
@@ -9,7 +9,7 @@ import type { CompInstance, Slots, VNode } from './types'
  * @param children
  * @returns
  */
-function initSlots(instance: CompInstance, children: VNode['children']) {
+function initSlots(instance: ComponentInternalInstance, children: VNode['children']) {
   const { vnode } = instance
   if (vnode.shapeFlag & ShapeFlags.SLOT_CHILDREN)
     instance.slots = normalizeObjectSlots(children)

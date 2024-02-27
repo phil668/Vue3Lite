@@ -1,4 +1,4 @@
-import { h, renderSlots } from '@mini-vue-phil/runtime-core'
+import { h, renderSlots } from '@mini-vue-phil/vue'
 
 const Slot = {
   name: 'Slot',

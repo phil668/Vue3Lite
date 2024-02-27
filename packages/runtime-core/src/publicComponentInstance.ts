@@ -1,9 +1,9 @@
 import { hasOwn } from '@mini-vue-phil/shared'
-import type { CompInstance } from './types'
+import type { ComponentInternalInstance } from './types'
 
 const publicPropsMap = {
-  $el: (i: CompInstance) => i.vnode.el,
-  $slots: (i: CompInstance) => i.slots,
+  $el: (i: ComponentInternalInstance) => i.vnode.el,
+  $slots: (i: ComponentInternalInstance) => i.slots,
 }
 
 const publicInstanceHandler = {
