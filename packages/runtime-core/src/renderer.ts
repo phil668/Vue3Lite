@@ -1,17 +1,17 @@
 import { ShapeFlags, isObject, isOn } from '@mini-vue-phil/shared'
 import { createComponentInstance, setupComponent } from './component'
-import type { CompInstance, VNode } from './types'
+import type { ComponentInternalInstance, VNode } from './types'
 import { Fragment, Text } from './vnode'
 
-function render(vnode: VNode, container: HTMLElement) {
-  patch(vnode, container)
+function render(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
+  patch(vnode, container, parentComonent)
 }
 
-function patch(vnode: VNode, container: HTMLElement) {
+function patch(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
   const { type, shapeFlag } = vnode
   switch (type) {
     case Fragment:
-      processFragment(vnode, container)
+      processFragment(vnode, container, parentComonent)
       break
 
     case Text:
@@ -20,22 +20,22 @@ function patch(vnode: VNode, container: HTMLElement) {
 
     default:
       if (shapeFlag & ShapeFlags.ELEMENT)
-        processElement(vnode, container)
+        processElement(vnode, container, parentComonent)
 
       else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
-        processComponent(vnode, container)
+        processComponent(vnode, container, parentComonent)
 
       // 处理组件
       break
   }
 }
 
-function processElement(vnode: VNode, container: HTMLElement) {
-  mountElement(vnode, container)
+function processElement(vnode: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
+  mountElement(vnode, container, parentComponent)
 }
 
-function processFragment(vnode: VNode, container: HTMLElement) {
-  mountChildren(vnode, container)
+function processFragment(vnode: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
+  mountChildren(vnode, container, parentComponent)
 }
 
 function processText(vnode: VNode, container: HTMLElement) {
@@ -44,7 +44,7 @@ function processText(vnode: VNode, container: HTMLElement) {
   container.append(textNode)
 }
 
-function mountElement(vnode: VNode, container: HTMLElement) {
+function mountElement(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
   if (typeof vnode.type !== 'string')
     return
 
@@ -69,31 +69,31 @@ function mountElement(vnode: VNode, container: HTMLElement) {
     el.innerText = children as string
 
   else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN)
-    mountChildren(vnode, el)
+    mountChildren(vnode, el, parentComonent)
 
   container.appendChild(el)
 }
 
-function mountChildren(vnode: VNode, container: HTMLElement) {
+function mountChildren(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
   Array.isArray(vnode.children) && vnode.children.forEach((v) => {
-    patch(v as VNode, container)
+    patch(v as VNode, container, parentComonent)
   })
 }
 
-function processComponent(vnode: VNode, container: HTMLElement) {
-  mountComponent(vnode, container)
+function processComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
+  mountComponent(vnode, container, parentComonent)
 }
 
-function mountComponent(vnode: VNode, container: HTMLElement) {
-  const instance = createComponentInstance(vnode)
+function mountComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
+  const instance = createComponentInstance(vnode, parentComonent)
   setupComponent(instance)
   setupRenderEffect(instance, vnode, container)
 }
 
-function setupRenderEffect(instance: CompInstance, vnode: VNode, container: HTMLElement) {
+function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement) {
   if (instance.render) {
     const subTree = instance.render.call(instance.proxy)
-    patch(subTree, container)
+    patch(subTree, container, instance)
     vnode.el = subTree.el
   }
 }
