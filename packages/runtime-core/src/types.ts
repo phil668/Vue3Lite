@@ -22,6 +22,7 @@ export interface ComponentInternalInstance {
   type: VNodeTypes
   setupState: null | object
   provides: Data
+  isMounted: boolean
   parent: ComponentInternalInstance | null
   props?: object
   slots?: Slots
@@ -29,4 +30,5 @@ export interface ComponentInternalInstance {
   render?: () => VNode
   proxy?: Object
   name?: string
+  subTree?: VNode
 }

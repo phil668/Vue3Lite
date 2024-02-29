@@ -15,6 +15,7 @@ function createComponentInstance(vnode: VNode, parent: ComponentInternalInstance
     slots: {},
     provides: parent ? parent.provides : Object.create(parent),
     parent,
+    isMounted: false,
   }
   compInstance.emit = emit.bind(null, compInstance)
   return compInstance

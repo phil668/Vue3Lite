@@ -7,7 +7,6 @@ export default {
 
     const handleClick = () => {
       count.value = count.value + 1
-      console.log('count.value', count.value)
     }
 
     return {
