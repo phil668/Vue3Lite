@@ -1,5 +1,6 @@
 import { createApp, createTextVNode, getCurrentInstance, h } from '@mini-vue-phil/vue'
 import Slot from './Slot'
+import UpdateProp from './UpdateProp'
 
 const App = {
   name: 'App',
@@ -42,4 +43,4 @@ const App = {
   },
 }
 
-createApp(App).mount('#app')
+createApp(UpdateProp).mount('#app')

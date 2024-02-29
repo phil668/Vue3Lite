@@ -1,5 +1,5 @@
 import { isObject } from '@mini-vue-phil/shared'
-import { shallowReadonly } from '@mini-vue-phil/reactivity'
+import { proxyRefs, shallowReadonly } from '@mini-vue-phil/reactivity'
 import type { ComponentInternalInstance, VNode } from './types'
 import { publicInstanceHandler } from './publicComponentInstance'
 import { initProps } from './componentProps'
@@ -43,7 +43,7 @@ function setupStatefulComponent(instance: any) {
 
 function handleSetupResult(instance: ComponentInternalInstance, setupResult: any) {
   if (isObject(setupResult))
-    instance.setupState = setupResult
+    instance.setupState = proxyRefs(setupResult)
 
   finishComponentSetup(instance)
 }

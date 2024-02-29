@@ -16,7 +16,7 @@ class RefImpl {
   private _value: any
   private _deps: Set<ReactiveEffect> = new Set()
   private _raw: any
-  public isRef = true
+  public __v_isRef__ = true
 
   constructor(value: any) {
     this._raw = value
@@ -39,12 +39,17 @@ class RefImpl {
   }
 }
 
+export function trackRefValue(ref: any) {
+  if (isTracking())
+    trackEffects(ref.dep)
+}
+
 function convert(value: any) {
   return isObject(value) ? reactive(value) : value
 }
 
 function isRef(ref: any) {
-  return ref instanceof RefImpl
+  return !!ref.__v_isRef__
 }
 
 function unRef(ref: any) {

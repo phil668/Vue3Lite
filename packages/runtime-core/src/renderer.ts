@@ -1,4 +1,5 @@
 import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
+import { effect } from '@mini-vue-phil/reactivity'
 import { createComponentInstance, setupComponent } from './component'
 import type { ComponentInternalInstance, VNode } from './types'
 import { Fragment, Text } from './vnode'
@@ -14,7 +15,6 @@ export function createRenderer(renderer: Renderer) {
   const { createElement, patchProp, insert } = renderer
 
   function render(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
-    debugger
     patch(vnode, container, parentComonent)
   }
 
@@ -96,11 +96,14 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement) {
-    if (instance.render) {
-      const subTree = instance.render.call(instance.proxy)
-      patch(subTree, container, instance)
-      vnode.el = subTree.el
-    }
+    effect(() => {
+      console.log('render')
+      if (instance.render) {
+        const subTree = instance.render.call(instance.proxy)
+        patch(subTree, container, instance)
+        vnode.el = subTree.el
+      }
+    })
   }
 
   return {

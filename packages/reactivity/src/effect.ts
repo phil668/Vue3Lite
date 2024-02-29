@@ -50,6 +50,7 @@ class ReactiveEffect<T = any> {
     shouldTrack = true
     const result = this._fn()
     shouldTrack = false
+    activeEffectFn = undefined as any
     return result
   }
 
