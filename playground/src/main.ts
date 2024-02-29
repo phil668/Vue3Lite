@@ -1,46 +1,23 @@
-import { createApp, createTextVNode, getCurrentInstance, h } from '@mini-vue-phil/vue'
-import Slot from './Slot'
-import UpdateProp from './UpdateProp'
+import { createApp, h, ref } from '@mini-vue-phil/vue'
 
 const App = {
   name: 'App',
   setup() {
-    const instance = getCurrentInstance()
-    console.log('instance', instance)
+    const count = ref(1)
+
+    const handleClick = () => {
+      count.value = count.value + 1
+      console.log('count.value', count.value)
+    }
+
     return {
-      message: 'phil',
+      count,
+      handleClick,
     }
   },
   render(): any {
-    // this.$el => 获取组件的根元素的dom
-    return h('div', { class: 'app' },
-      [
-      // h('div', {
-      //   class: 'red',
-      //   onClick() {
-      //     console.log('click', this.message)
-      //   },
-      //   onMousedown() {
-      //     console.log('mouseDown')
-      //   },
-      // }, this.message),
-      // h('div', { class: 'green' }, this.message),
-      // h(Foo, {
-      //   count: 1,
-      //   onAdd(a, b, c) {
-      //     console.log('onAdd', a, b, c)
-      //   },
-      //   onAddFoo(a, b, c) {
-      //     console.log('onAddFoo', a, b, c)
-      //   },
-      // }),
-        h(Slot, {}, {
-          header: ({ age }) => [h('p', {}, `slot children header${age}`), createTextVNode('this is a text node')],
-          footer: ({ age }) => h('p', {}, `slot children footer${age}`),
-        }),
-      ],
-    )
+    return h('div', {}, [h('p', {}, `Count - ${this.count}`), h('button', { onClick: this.handleClick }, 'add')])
   },
 }
 
-createApp(UpdateProp).mount('#app')
+createApp(App).mount('#app')

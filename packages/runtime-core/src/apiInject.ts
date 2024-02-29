@@ -1,4 +1,4 @@
-import { getCurrentInstance } from '.'
+import { getCurrentInstance } from './component'
 
 function provide(key: string, value: unknown) {
   const instance = getCurrentInstance()

@@ -97,7 +97,6 @@ export function createRenderer(renderer: Renderer) {
 
   function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement) {
     effect(() => {
-      console.log('render')
       if (instance.render) {
         const subTree = instance.render.call(instance.proxy)
         patch(subTree, container, instance)

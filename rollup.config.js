@@ -2,7 +2,6 @@ import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { createRequire } from 'node:module'
 import { defineConfig } from 'rollup'
-import { nodeResolve } from '@rollup/plugin-node-resolve'
 import { dts } from 'rollup-plugin-dts'
 import esbuild from 'rollup-plugin-esbuild'
 
@@ -30,19 +29,25 @@ export default defineConfig([
       file: resolve(`dist/${name}.esm.js`),
       format: 'esm',
     },
-    {
-      file: resolve(`dist/${name}.global.js`),
-      format: 'iife',
-      name: 'miniVue',
-    },
     ],
     plugins: [
-      nodeResolve(),
       esbuild({
         tsconfig: resolve('tsconfig.json'),
       }),
     ],
+    external: ['@mini-vue-phil/reactivity', '@mini-vue-phil/runtime-dom', '@mini-vue-phil/runtime-core', '@mini-vue-phil/shared'],
   },
+  // {
+  //   input: resolve('src/index.ts'),
+  //   output: [
+  //     {
+  //       file: resolve(`dist/${name}.global.js`),
+  //       format: 'iife',
+  //       name,
+  //     },
+  //   ],
+  //   plugins: [nodeResolve()],
+  // },
   {
     input: resolve('src/index.ts'),
     output: [{
