@@ -57,16 +57,18 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function patchProps(el: HTMLElement, oldProps: any, newProps: any) {
-    console.log('newProps', newProps)
     //
     for (const key in newProps) {
       const oldValue = oldProps[key]
       const newValue = newProps[key]
 
-      console.log('oldValue', oldValue, newValue)
-
       if (oldValue !== newValue)
         hostPatchProp(el, key, oldValue, newValue)
+    }
+
+    for (const key in oldProps) {
+      if (!(key in newProps))
+        hostPatchProp(el, key, oldProps[key], null)
     }
   }
 
@@ -132,13 +134,9 @@ export function createRenderer(renderer: Renderer) {
         instance.isMounted = true
       }
       else {
-        console.log('update')
         const subTree = instance.render.call(instance.proxy)
         const prevTree = instance.subTree!
-        console.log('subTree', { prevTree, subTree })
         patch(prevTree, subTree, container, instance)
-        // vnode.el = subTree.el
-        // instance.isMounted = true
       }
     })
   }

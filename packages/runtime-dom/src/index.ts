@@ -6,13 +6,18 @@ const createElement: Renderer['createElement'] = (type: string) => {
   return document.createElement(type)
 }
 
-const patchProp: Renderer['patchProp'] = (el: any, key: string, prevValue: unknown, nextValue: unknown) => {
+const patchProp: Renderer['patchProp'] = (el: HTMLElement, key: string, prevValue: unknown, nextValue: unknown) => {
   if (isOn(key)) {
     const eventName = key.slice(2).toLowerCase()
     el.addEventListener(eventName, nextValue as any)
   }
-  else
-    el.setAttribute(key, nextValue as string)
+  else {
+    if (typeof nextValue === 'undefined' || nextValue === null)
+      el.removeAttribute(key)
+
+    else
+      el.setAttribute(key, nextValue as string)
+  }
 }
 
 const insert: Renderer['insert'] = (el: any, parent: any) => {
