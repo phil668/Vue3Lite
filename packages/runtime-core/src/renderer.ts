@@ -1,3 +1,4 @@
+import type { Renderer } from '@mini-vue-phil/shared'
 import { ShapeFlags, isObject } from '@mini-vue-phil/shared'
 import { effect } from '@mini-vue-phil/reactivity'
 import { createComponentInstance, setupComponent } from './component'
@@ -5,14 +6,8 @@ import type { ComponentInternalInstance, VNode } from './types'
 import { Fragment, Text } from './vnode'
 import { createAppApi } from './createApp'
 
-export interface Renderer {
-  createElement: (type: string) => any
-  patchProp: (el: any, key: string, value: unknown) => void
-  insert: (el: any, parent: any) => void
-}
-
 export function createRenderer(renderer: Renderer) {
-  const { createElement, patchProp, insert } = renderer
+  const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = renderer
 
   function render(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
     patch(null, vnode, container, parentComonent)
@@ -49,9 +44,30 @@ export function createRenderer(renderer: Renderer) {
       patchElement(n1, n2, container)
   }
 
-  function patchElement(n1: VNode | null, n2: VNode, container: HTMLElement) {
+  function patchElement(n1: VNode, n2: VNode, container: HTMLElement) {
     console.log('n1', n1)
     console.log('n2', n2)
+
+    const oldProps = n1?.props || {}
+    const newProps = n2.props || {}
+
+    const el = (n2.el = n1.el)
+
+    el && patchProps(el, oldProps, newProps)
+  }
+
+  function patchProps(el: HTMLElement, oldProps: any, newProps: any) {
+    console.log('newProps', newProps)
+    //
+    for (const key in newProps) {
+      const oldValue = oldProps[key]
+      const newValue = newProps[key]
+
+      console.log('oldValue', oldValue, newValue)
+
+      if (oldValue !== newValue)
+        hostPatchProp(el, key, oldValue, newValue)
+    }
   }
 
   function processFragment(n1: VNode | null, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
@@ -61,7 +77,7 @@ export function createRenderer(renderer: Renderer) {
   function processText(n1: VNode | null, n2: VNode, container: HTMLElement) {
     const { children } = n2
     const textNode = n2.el = document.createTextNode(children as string) as any
-    insert(textNode, container)
+    hostInsert(textNode, container)
   }
 
   function mountElement(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
@@ -69,12 +85,12 @@ export function createRenderer(renderer: Renderer) {
       return
 
     const { type, children, props, shapeFlag } = vnode
-    const el = (vnode.el = createElement(type))
+    const el = (vnode.el = hostCreateElement(type))
 
     // props
     if (props && isObject(props)) {
       Object.entries(props).forEach(([key, value]) => {
-        patchProp(el, key, value)
+        hostPatchProp(el, key, null, value)
       })
     }
 

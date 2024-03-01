@@ -1,20 +1,21 @@
 import { createRenderer } from '@mini-vue-phil/runtime-core'
+import type { Renderer } from '@mini-vue-phil/shared'
 import { isOn } from '@mini-vue-phil/shared'
 
-function createElement(type: string) {
+const createElement: Renderer['createElement'] = (type: string) => {
   return document.createElement(type)
 }
 
-function patchProp(el: any, key: string, value: unknown) {
+const patchProp: Renderer['patchProp'] = (el: any, key: string, prevValue: unknown, nextValue: unknown) => {
   if (isOn(key)) {
     const eventName = key.slice(2).toLowerCase()
-    el.addEventListener(eventName, value as any)
+    el.addEventListener(eventName, nextValue as any)
   }
   else
-    el.setAttribute(key, value as string)
+    el.setAttribute(key, nextValue as string)
 }
 
-function insert(el: any, parent: any) {
+const insert: Renderer['insert'] = (el: any, parent: any) => {
   (parent as HTMLElement).append(el)
 }
 

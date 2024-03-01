@@ -19,3 +19,4 @@ function hasOwn(obj: object, key: string) {
 }
 export { isObject, hasChanged, isString, isOn, hasOwn }
 export * from './shapeFlag'
+export * from './types'
