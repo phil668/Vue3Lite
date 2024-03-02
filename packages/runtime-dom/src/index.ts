@@ -24,10 +24,21 @@ const insert: Renderer['insert'] = (el: any, parent: any) => {
   (parent as HTMLElement).append(el)
 }
 
+const remove: Renderer['remove'] = (el: HTMLElement) => {
+  if (el.parentElement)
+    el.parentElement.removeChild(el)
+}
+
+const setElementText: Renderer['setElementText'] = (el: HTMLElement, text: string) => {
+  el.textContent = text
+}
+
 const renderer = createRenderer({
   createElement,
   patchProp,
   insert,
+  remove,
+  setElementText,
 })
 
 function createApp(...args: any[]) {

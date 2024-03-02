@@ -7,7 +7,13 @@ import { Fragment, Text } from './vnode'
 import { createAppApi } from './createApp'
 
 export function createRenderer(renderer: Renderer) {
-  const { createElement: hostCreateElement, patchProp: hostPatchProp, insert: hostInsert } = renderer
+  const {
+    createElement: hostCreateElement,
+    patchProp: hostPatchProp,
+    insert: hostInsert,
+    remove: hostRemove,
+    setElementText: hostSetElementText,
+  } = renderer
 
   function render(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
     patch(null, vnode, container, parentComonent)
@@ -41,10 +47,10 @@ export function createRenderer(renderer: Renderer) {
       mountElement(n2, container, parentComponent)
 
     else
-      patchElement(n1, n2, container)
+      patchElement(n1, n2, container, parentComponent)
   }
 
-  function patchElement(n1: VNode, n2: VNode, container: HTMLElement) {
+  function patchElement(n1: VNode, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
     console.log('n1', n1)
     console.log('n2', n2)
 
@@ -54,8 +60,50 @@ export function createRenderer(renderer: Renderer) {
     const el = (n2.el = n1.el)
 
     el && patchProps(el, oldProps, newProps)
+
+    const c1 = n1.children
+    const c2 = n2.children
+
+    // 处理children
+    // Array => Text 把之前el下的节点移除 然后替换成text
+    const prevShapeFlag = n1.shapeFlag
+    const nextShapeFlag = n2.shapeFlag
+
+    if (nextShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+      if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+        // 把之前的节点删除
+        unmountChildren(c1 as VNode[])
+        // 挂载新的文本节点
+      }
+
+      if (c1 !== c2)
+        hostSetElementText(container, c2 as string)
+    }
+    else {
+      if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        hostSetElementText(container, '')
+        mountChildren(n2, container, parentComponent)
+      }
+    }
   }
 
+  function unmountChildren(children: VNode[]) {
+    for (let i = 0; i < children.length; i++) {
+      const el = children[i].el
+      hostRemove(el)
+    }
+  }
+
+  /**
+ * @desc 更新prop
+ * 3种情况
+ * 1. {foo:1} => {foo:2} 需要更新对应的属性
+ * 2. 新的属性被设置成了undefined或者null，需要删除该属性
+ * 3. 新的prop没有该属性，也需要删除该属性
+ * @param el
+ * @param oldProps
+ * @param newProps
+ */
   function patchProps(el: HTMLElement, oldProps: any, newProps: any) {
     //
     for (const key in newProps) {
