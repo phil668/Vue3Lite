@@ -20,8 +20,9 @@ const patchProp: Renderer['patchProp'] = (el: HTMLElement, key: string, prevValu
   }
 }
 
-const insert: Renderer['insert'] = (el: any, parent: any) => {
-  (parent as HTMLElement).append(el)
+const insert: Renderer['insert'] = (el: HTMLElement, parent: HTMLElement, anchor: any) => {
+  // (parent as HTMLElement).append(el)
+  parent.insertBefore(el, anchor || null)
 }
 
 const remove: Renderer['remove'] = (el: HTMLElement) => {

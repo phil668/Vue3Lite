@@ -12,6 +12,7 @@ export interface VNode {
   type: VNodeTypes
   el: null | HTMLElement
   shapeFlag: number
+  key: string | number
   props?: object
   children?: (string | VNode)[] | string | VNode | Record<string, VNode> | SlotRaw
   render?: () => VNode

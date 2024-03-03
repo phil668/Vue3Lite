@@ -16,41 +16,41 @@ export function createRenderer(renderer: Renderer) {
   } = renderer
 
   function render(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
-    patch(null, vnode, container, parentComonent)
+    patch(null, vnode, container, parentComonent, null)
   }
 
-  function patch(n1: VNode | null, n2: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null) {
+  function patch(n1: VNode | null, n2: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null = null, anchor: HTMLElement | null) {
     const { type, shapeFlag } = n2
     switch (type) {
       case Fragment:
-        processFragment(n1, n2, container, parentComonent)
+        processFragment(n1, n2, container, parentComonent, anchor)
         break
 
       case Text:
-        processText(n1, n2, container)
+        processText(n1, n2, container, anchor)
         break
 
       default:
         if (shapeFlag & ShapeFlags.ELEMENT)
-          processElement(n1, n2, container, parentComonent)
+          processElement(n1, n2, container, parentComonent, anchor)
 
         else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT)
-          processComponent(n1, n2, container, parentComonent)
+          processComponent(n1, n2, container, parentComonent, anchor)
 
         // 处理组件
         break
     }
   }
 
-  function processElement(n1: VNode | null, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
+  function processElement(n1: VNode | null, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     if (!n1)
-      mountElement(n2, container, parentComponent)
+      mountElement(n2, container, parentComponent, anchor)
 
     else
-      patchElement(n1, n2, container, parentComponent)
+      patchElement(n1, n2, container, parentComponent, anchor)
   }
 
-  function patchElement(n1: VNode, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
+  function patchElement(n1: VNode, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     console.log('n1', n1)
     console.log('n2', n2)
 
@@ -59,8 +59,11 @@ export function createRenderer(renderer: Renderer) {
 
     const el = (n2.el = n1.el)
 
+    el && patchChildren(n1, n2, el, parentComponent, anchor)
     el && patchProps(el, oldProps, newProps)
+  }
 
+  function patchChildren(n1: VNode, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     const c1 = n1.children
     const c2 = n2.children
 
@@ -82,9 +85,111 @@ export function createRenderer(renderer: Renderer) {
     else {
       if (prevShapeFlag & ShapeFlags.TEXT_CHILDREN) {
         hostSetElementText(container, '')
-        mountChildren(n2, container, parentComponent)
+        mountChildren(n2, container, parentComponent, anchor)
+      }
+      else {
+        // Array to Array
+        patchKeyedChildren(c1 as VNode[], c2 as VNode[], container, parentComponent, anchor)
       }
     }
+  }
+
+  // 双端对比diff算法
+  function patchKeyedChildren(c1: VNode[], c2: VNode[], conatiner: HTMLElement, parentComponent: ComponentInternalInstance | null, parentAnchor: HTMLElement | null) {
+    let i = 0
+    const l2 = c2.length
+
+    let e1 = c1.length - 1
+    let e2 = l2 - 1
+
+    // 处理左边
+    while (i <= e1 && i <= e2) {
+      const n1 = c1[i]
+      const n2 = c2[i]
+      if (isSameVNode(n1, n2))
+        patch(n1, n2, conatiner, parentComponent, parentAnchor)
+
+      else
+        break
+
+      i++
+    }
+
+    // 处理右边
+    while (i <= e1 && i <= e2) {
+      const n1 = c1[e1]
+      const n2 = c2[e2]
+      if (isSameVNode(n1, n2))
+        patch(n1, n2, conatiner, parentComponent, parentAnchor)
+
+      else
+        break
+
+      e1--
+      e2--
+    }
+
+    if (i > e1) {
+      // 新的比老的多
+      if (i <= e2) {
+        const nextPos = i + 1
+        const anchor = i + 1 < l2 ? c2[nextPos].el : null
+        while (i <= e2) {
+          patch(null, c2[i], conatiner, parentComponent, anchor)
+          i++
+        }
+      }
+    }
+    else if (i > e2) {
+      // 说明老的比新的多
+      while (i <= e1) {
+        hostRemove(c1[i].el)
+        i++
+      }
+    }
+    else {
+      const s1 = i
+      const s2 = i
+      const keyToNewIndexMap = new Map()
+      const toBePatched = e2 - s2 + 1
+      let patched = 0
+      for (let index = s2; index < e2; index++)
+        keyToNewIndexMap.set(c2[index], index)
+
+      for (let index = 0; index < s1; index++) {
+        const prevChild = c1[index]
+        let newIndex
+
+        if (patched >= toBePatched) {
+          hostRemove(prevChild)
+          continue
+        }
+
+        if (prevChild.key !== null || typeof prevChild.key !== 'undefined')
+          newIndex = keyToNewIndexMap.get(prevChild.key)
+        else {
+          for (let j = s2; j <= e2; j++) {
+            if (isSameVNode(prevChild, c2[j])) {
+              newIndex = j
+              break
+            }
+          }
+        }
+
+        // 如果newIndex不为空的话，说明老的children内也有
+        if (newIndex !== null && typeof newIndex !== 'undefined')
+          hostRemove(prevChild)
+
+        else {
+          patch(prevChild, c2[newIndex], conatiner, parentComponent, null)
+          patched++
+        }
+      }
+    }
+  }
+
+  function isSameVNode(n1: VNode, n2: VNode) {
+    return n1.type === n2.type && n1.key === n2.key
   }
 
   function unmountChildren(children: VNode[]) {
@@ -120,17 +225,17 @@ export function createRenderer(renderer: Renderer) {
     }
   }
 
-  function processFragment(n1: VNode | null, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null) {
-    mountChildren(n2, container, parentComponent)
+  function processFragment(n1: VNode | null, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
+    mountChildren(n2, container, parentComponent, anchor)
   }
 
-  function processText(n1: VNode | null, n2: VNode, container: HTMLElement) {
+  function processText(n1: VNode | null, n2: VNode, container: HTMLElement, anchor: HTMLElement | null) {
     const { children } = n2
     const textNode = n2.el = document.createTextNode(children as string) as any
-    hostInsert(textNode, container)
+    hostInsert(textNode, container, anchor)
   }
 
-  function mountElement(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
+  function mountElement(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     if (typeof vnode.type !== 'string')
       return
 
@@ -149,42 +254,44 @@ export function createRenderer(renderer: Renderer) {
       el.innerText = children as string
 
     else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN)
-      mountChildren(vnode, el, parentComonent)
+      mountChildren(vnode, el, parentComonent, anchor)
 
-    container.appendChild(el)
+    // container.appendChild(el)
+    hostInsert(el, container, anchor)
   }
 
-  function mountChildren(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
+  function mountChildren(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     Array.isArray(vnode.children) && vnode.children.forEach((v) => {
-      patch(null, v as VNode, container, parentComonent)
+      patch(null, v as VNode, container, parentComonent, anchor)
     })
   }
 
-  function processComponent(n1: VNode | null, n2: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
-    mountComponent(n2, container, parentComonent)
+  function processComponent(n1: VNode | null, n2: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
+    mountComponent(n2, container, parentComonent, anchor)
   }
 
-  function mountComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null) {
+  function mountComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
     const instance = createComponentInstance(vnode, parentComonent)
     setupComponent(instance)
-    setupRenderEffect(instance, vnode, container)
+    setupRenderEffect(instance, vnode, container, anchor)
   }
 
-  function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement) {
+  function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement, anchor: HTMLElement | null) {
     effect(() => {
       if (!instance.render)
         return
 
       if (!instance.isMounted) {
         const subTree = (instance.subTree = instance.render.call(instance.proxy))
-        patch(null, subTree, container, instance)
+        patch(null, subTree, container, instance, anchor)
         vnode.el = subTree.el
         instance.isMounted = true
       }
       else {
         const subTree = instance.render.call(instance.proxy)
         const prevTree = instance.subTree!
-        patch(prevTree, subTree, container, instance)
+        instance.subTree = subTree
+        patch(prevTree, subTree, container, instance, anchor)
       }
     })
   }
