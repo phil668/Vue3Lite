@@ -51,9 +51,6 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function patchElement(n1: VNode, n2: VNode, container: HTMLElement, parentComponent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
-    console.log('n1', n1)
-    console.log('n2', n2)
-
     const oldProps = n1?.props || {}
     const newProps = n2.props || {}
 
@@ -152,18 +149,27 @@ export function createRenderer(renderer: Renderer) {
       const s2 = i
       const keyToNewIndexMap = new Map()
       const toBePatched = e2 - s2 + 1
-      let patched = 0
-      for (let index = s2; index < e2; index++)
-        keyToNewIndexMap.set(c2[index], index)
+      let moved = false
+      let maxNewIndexSoFar = 0
 
-      for (let index = 0; index < s1; index++) {
+      let patched = 0
+
+      const newIndexToOldIndexMap = new Array(toBePatched)
+      for (let i = 0; i < toBePatched; i++)
+        newIndexToOldIndexMap[i] = 0
+
+      for (let i = s2; i <= e2; i++)
+        keyToNewIndexMap.set(c2[i].key, i)
+
+      for (let index = s1; index <= e1; index++) {
         const prevChild = c1[index]
-        let newIndex
 
         if (patched >= toBePatched) {
           hostRemove(prevChild)
           continue
         }
+
+        let newIndex
 
         if (prevChild.key !== null || typeof prevChild.key !== 'undefined')
           newIndex = keyToNewIndexMap.get(prevChild.key)
@@ -176,13 +182,42 @@ export function createRenderer(renderer: Renderer) {
           }
         }
 
-        // 如果newIndex不为空的话，说明老的children内也有
-        if (newIndex !== null && typeof newIndex !== 'undefined')
+        // 如果newIndex为空的话，说明当前老节点的key在新节点中找不到，直接删除
+        if (newIndex === null && typeof newIndex === 'undefined')
           hostRemove(prevChild)
 
         else {
+          if (newIndex >= maxNewIndexSoFar)
+            maxNewIndexSoFar = newIndex
+
+          else
+            moved = true
+
+          newIndexToOldIndexMap[newIndex - s2] = index + 1
           patch(prevChild, c2[newIndex], conatiner, parentComponent, null)
           patched++
+        }
+      }
+
+      // move
+      const increasingNewIndexSequence = moved ? getSequence(newIndexToOldIndexMap) : []
+      let j = increasingNewIndexSequence.length - 1
+      for (let i = toBePatched - 1; i >= 0; i--) {
+        const nextIndex = s2 + i
+        const nextChild = c2[nextIndex]
+        const anchor = nextIndex + 1 < l2 ? c2[nextIndex + 1].el : null
+        if (newIndexToOldIndexMap[i] === 0) {
+          // 说明之前没有需要mount
+          patch(null, nextChild, conatiner, parentComponent, anchor)
+        }
+        else {
+          if (moved) {
+            if (j < 0 || increasingNewIndexSequence[j] !== i)
+              hostInsert(nextChild.el, conatiner, anchor)
+
+            else
+              j--
+          }
         }
       }
     }
@@ -299,4 +334,44 @@ export function createRenderer(renderer: Renderer) {
   return {
     createApp: createAppApi(render),
   }
+}
+
+function getSequence(arr: number[]): number[] {
+  const p = arr.slice()
+  const result = [0]
+  let i, j, u, v, c
+  const len = arr.length
+  for (i = 0; i < len; i++) {
+    const arrI = arr[i]
+    if (arrI !== 0) {
+      j = result[result.length - 1]
+      if (arr[j] < arrI) {
+        p[i] = j
+        result.push(i)
+        continue
+      }
+      u = 0
+      v = result.length - 1
+      while (u < v) {
+        c = (u + v) >> 1
+        if (arr[result[c]] < arrI)
+          u = c + 1
+        else
+          v = c
+      }
+      if (arrI < arr[result[u]]) {
+        if (u > 0)
+          p[i] = result[u - 1]
+
+        result[u] = i
+      }
+    }
+  }
+  u = result.length
+  v = result[u - 1]
+  while (u-- > 0) {
+    result[u] = v
+    v = p[v]
+  }
+  return result
 }

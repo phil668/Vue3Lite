@@ -136,6 +136,8 @@ const text = 'text'
 // ]
 
 // 更新中间
+// ab ced f
+// ab dceg f
 const prevChilldren = [
   h('p', { key: 'A' }, 'A'),
   h('p', { key: 'B' }, 'B'),
@@ -148,8 +150,10 @@ const prevChilldren = [
 const nextChildren = [
   h('p', { key: 'A' }, 'A'),
   h('p', { key: 'B' }, 'B'),
+  h('p', { key: 'D' }, 'D'),
   h('p', { key: 'C' }, 'C'),
   h('p', { key: 'E' }, 'E'),
+  h('p', { key: 'G' }, 'G'),
   h('p', { key: 'F' }, 'F'),
 ]
 
