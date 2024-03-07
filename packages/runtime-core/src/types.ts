@@ -13,6 +13,7 @@ export interface VNode {
   el: null | HTMLElement
   shapeFlag: number
   key: string | number
+  component: ComponentInternalInstance | null
   props?: object
   children?: (string | VNode)[] | string | VNode | Record<string, VNode> | SlotRaw
   render?: () => VNode
@@ -25,6 +26,7 @@ export interface ComponentInternalInstance {
   provides: Data
   isMounted: boolean
   parent: ComponentInternalInstance | null
+  next: VNode | null
   props?: object
   slots?: Slots
   emit?: (...args: any) => void | any
@@ -32,4 +34,5 @@ export interface ComponentInternalInstance {
   proxy?: Object
   name?: string
   subTree?: VNode
+  update?: (...args: any[]) => any
 }

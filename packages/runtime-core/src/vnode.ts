@@ -10,6 +10,7 @@ function createVnode(type: VNode['type'], props?: VNode['props'], children?: VNo
     props,
     children,
     el: null,
+    component: null,
     key: (props as any)?.key,
     shapeFlag: getShapeFlag(type),
   }

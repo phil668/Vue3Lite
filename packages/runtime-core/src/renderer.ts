@@ -5,6 +5,7 @@ import { createComponentInstance, setupComponent } from './component'
 import type { ComponentInternalInstance, VNode } from './types'
 import { Fragment, Text } from './vnode'
 import { createAppApi } from './createApp'
+import { shouldUpdateComponent } from './updateComponentUtils'
 
 export function createRenderer(renderer: Renderer) {
   const {
@@ -302,17 +303,32 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function processComponent(n1: VNode | null, n2: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
-    mountComponent(n2, container, parentComonent, anchor)
+    if (!n1)
+      mountComponent(n2, container, parentComonent, anchor)
+
+    else
+      updateComponent(n1, n2)
   }
 
   function mountComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
-    const instance = createComponentInstance(vnode, parentComonent)
+    const instance = (vnode.component = createComponentInstance(vnode, parentComonent))
     setupComponent(instance)
     setupRenderEffect(instance, vnode, container, anchor)
   }
 
+  function updateComponent(n1: VNode, n2: VNode) {
+    if (shouldUpdateComponent(n1, n2)) {
+      const instance = (n2.component = n1.component)
+      if (!instance)
+        return
+
+      instance.next = n2
+      instance.update && instance.update()
+    }
+  }
+
   function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement, anchor: HTMLElement | null) {
-    effect(() => {
+    instance.update = effect(() => {
       if (!instance.render)
         return
 
@@ -323,6 +339,12 @@ export function createRenderer(renderer: Renderer) {
         instance.isMounted = true
       }
       else {
+        const { next, vnode } = instance
+        if (next) {
+          next.el = vnode.el
+          updateComponentPreRender(instance, next)
+        }
+
         const subTree = instance.render.call(instance.proxy)
         const prevTree = instance.subTree!
         instance.subTree = subTree
@@ -334,6 +356,13 @@ export function createRenderer(renderer: Renderer) {
   return {
     createApp: createAppApi(render),
   }
+}
+
+function updateComponentPreRender(instance: ComponentInternalInstance, nextVNode: VNode) {
+  instance.vnode = nextVNode
+  instance.next = null
+
+  instance.props = nextVNode.props
 }
 
 function getSequence(arr: number[]): number[] {

@@ -4,6 +4,7 @@ import type { ComponentInternalInstance } from './types'
 const publicPropsMap = {
   $el: (i: ComponentInternalInstance) => i.vnode.el,
   $slots: (i: ComponentInternalInstance) => i.slots,
+  $props: (i: ComponentInternalInstance) => i.props,
 }
 
 const publicInstanceHandler = {
