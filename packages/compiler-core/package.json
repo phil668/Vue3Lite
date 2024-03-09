@@ -1,0 +1,21 @@
+{
+  "name": "@mini-vue-phil/compiler-core",
+  "version": "1.0.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "main": "dist/compiler-core.cjs.js",
+  "module": "dist/compiler-core.esm.js",
+  "types": "dist/index.d.ts",
+  "buildOptions": {
+    "name": "vueCompilerCore",
+    "formats": [
+      "esm",
+      "cjs"
+    ]
+  },
+  "scripts": {
+  }
+
+}
