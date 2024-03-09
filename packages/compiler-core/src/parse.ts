@@ -1,4 +1,4 @@
-import type { Node } from './ast'
+import type { AstTree, Node } from './ast'
 import { NodeTypes } from './ast'
 
 interface ParseContext {
@@ -13,7 +13,7 @@ const enum TagType {
 const openDelimiter = '{{'
 const endDelimiter = '}}'
 
-export function baseParse(content: string): Node {
+export function baseParse(content: string): AstTree {
   const context = createParseContext(content)
 
   return createRoot(parseChildren(context, ''))
@@ -125,7 +125,7 @@ function advanceBy(context: ParseContext, length: number) {
   context.source = context.source.slice(length)
 }
 
-function createRoot(children: Array<Node>): Node {
+function createRoot(children: Array<Node>): AstTree {
   return {
     type: NodeTypes.ROOT,
     children,

@@ -6,6 +6,11 @@ export const enum NodeTypes {
   ROOT,
 }
 
+export interface AstTree {
+  type: NodeTypes.ROOT
+  children: Array<Node>
+}
+
 export interface Node {
   type: NodeTypes
   content?: string | Node
