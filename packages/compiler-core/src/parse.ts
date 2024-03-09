@@ -16,12 +16,12 @@ const endDelimiter = '}}'
 export function baseParse(content: string): Node {
   const context = createParseContext(content)
 
-  return createRoot(parseChildren(context))
+  return createRoot(parseChildren(context, ''))
 }
 
-function parseChildren(context: ParseContext): Node[] {
+function parseChildren(context: ParseContext, parentTag: string): Node[] {
   const nodes: Node[] = []
-  while (!isEnd(context)) {
+  while (!isEnd(context, parentTag)) {
     let node
     if (context.source.startsWith(openDelimiter))
       node = parseInterpolation(context)
@@ -39,16 +39,20 @@ function parseChildren(context: ParseContext): Node[] {
   return nodes
 }
 
-function isEnd(context: ParseContext) {
+function isEnd(context: ParseContext, parentTag: string) {
   // source为空 或者 解析到结束标签
-  return !context.source || context.source === '</div>'
+  return !context.source || context.source.startsWith(`</${parentTag}>`)
 }
 
 function parseText(context: ParseContext): Node {
   let endIndex = context.source.length
-  const openDelimiterIndex = context.source.indexOf(openDelimiter)
-  if (openDelimiterIndex !== -1)
-    endIndex = context.source.indexOf(openDelimiter)
+  const endTokens = ['<', openDelimiter]
+
+  for (let i = 0; i < endTokens.length; i++) {
+    const endTokenIndex = context.source.indexOf(endTokens[i])
+    if (endTokenIndex !== -1 && endIndex > endTokenIndex)
+      endIndex = endTokenIndex
+  }
 
   const content = parseTextData(context, endIndex)
 
@@ -69,7 +73,7 @@ function parseTextData(context: ParseContext, length: number) {
 function parseElement(context: ParseContext): Node {
   const node = parseTag(context, TagType.START)!
 
-  node.children = parseChildren(context)
+  node.children = parseChildren(context, node.tag!)
 
   parseTag(context, TagType.END)
 
