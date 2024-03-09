@@ -4,6 +4,11 @@ interface ParseContext {
   source: string
 }
 
+const enum TagType {
+  START,
+  END,
+}
+
 const openDelimiter = '{{'
 const endDelimiter = '}}'
 
@@ -19,9 +24,41 @@ function parseChildren(context: ParseContext) {
   if (context.source.startsWith(openDelimiter))
     node = parseInterpolation(context)
 
+  else if (context.source[0].startsWith('<')) {
+    if (/[a-z]/i.test(context.source))
+      node = parseElement(context)
+  }
+
   nodes.push(node)
 
   return nodes
+}
+
+function parseElement(context: ParseContext) {
+  const element = parseTag(context, TagType.START)
+
+  parseTag(context, TagType.END)
+
+  return element
+}
+
+function parseTag(context: ParseContext, type: TagType) {
+  const match = /^<\/?([a-z]*)/.exec(context.source)
+  if (!match)
+    return null
+
+  const tag = match[1]
+
+  advanceBy(context, match[0].length)
+  advanceBy(context, 1)
+
+  if (TagType.END === type)
+    return
+
+  return {
+    type: NodeTypes.ELEMENT,
+    tag,
+  }
 }
 
 function parseInterpolation(context: ParseContext) {
