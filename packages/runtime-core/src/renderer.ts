@@ -6,6 +6,7 @@ import type { ComponentInternalInstance, VNode } from './types'
 import { Fragment, Text } from './vnode'
 import { createAppApi } from './createApp'
 import { shouldUpdateComponent } from './updateComponentUtils'
+import { queueJob } from './scheduler'
 
 export function createRenderer(renderer: Renderer) {
   const {
@@ -311,6 +312,7 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function mountComponent(vnode: VNode, container: HTMLElement, parentComonent: ComponentInternalInstance | null, anchor: HTMLElement | null) {
+    console.log('updateComponent')
     const instance = (vnode.component = createComponentInstance(vnode, parentComonent))
     setupComponent(instance)
     setupRenderEffect(instance, vnode, container, anchor)
@@ -328,7 +330,8 @@ export function createRenderer(renderer: Renderer) {
   }
 
   function setupRenderEffect(instance: ComponentInternalInstance, vnode: VNode, container: HTMLElement, anchor: HTMLElement | null) {
-    instance.update = effect(() => {
+    function componentUpdateFn() {
+      console.log('componentUpdateFn')
       if (!instance.render)
         return
 
@@ -350,6 +353,12 @@ export function createRenderer(renderer: Renderer) {
         instance.subTree = subTree
         patch(prevTree, subTree, container, instance, anchor)
       }
+    }
+
+    instance.update = effect(componentUpdateFn, {
+      scheduler() {
+        queueJob(instance.update!)
+      },
     })
   }
 

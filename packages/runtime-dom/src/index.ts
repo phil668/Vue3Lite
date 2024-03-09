@@ -21,7 +21,6 @@ const patchProp: Renderer['patchProp'] = (el: HTMLElement, key: string, prevValu
 }
 
 const insert: Renderer['insert'] = (el: HTMLElement, parent: HTMLElement, anchor: any) => {
-  // (parent as HTMLElement).append(el)
   parent.insertBefore(el, anchor || null)
 }
 
