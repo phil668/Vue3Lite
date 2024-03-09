@@ -80,4 +80,10 @@ describe('multile children', () => {
       ],
     })
   })
+
+  it('should throw error', () => {
+    expect(() => {
+      baseParse('<div><span></div>')
+    }).toThrowError('缺少结束标签: span')
+  })
 })

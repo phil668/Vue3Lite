@@ -16,19 +16,19 @@ const endDelimiter = '}}'
 export function baseParse(content: string): AstTree {
   const context = createParseContext(content)
 
-  return createRoot(parseChildren(context, ''))
+  return createRoot(parseChildren(context, []))
 }
 
-function parseChildren(context: ParseContext, parentTag: string): Node[] {
+function parseChildren(context: ParseContext, ancestors: Node[]): Node[] {
   const nodes: Node[] = []
-  while (!isEnd(context, parentTag)) {
+  while (!isEnd(context, ancestors)) {
     let node
     if (context.source.startsWith(openDelimiter))
       node = parseInterpolation(context)
 
     else if (context.source[0].startsWith('<')) {
       if (/[a-z]/i.test(context.source))
-        node = parseElement(context)
+        node = parseElement(context, ancestors)
     }
     else
       node = parseText(context)
@@ -39,9 +39,22 @@ function parseChildren(context: ParseContext, parentTag: string): Node[] {
   return nodes
 }
 
-function isEnd(context: ParseContext, parentTag: string) {
+function isEnd(context: ParseContext, ancestors: Node[]) {
+  const s = context.source
+  if (s.startsWith('<')) {
+    for (let i = 0; i < ancestors.length; i++) {
+      const tag = ancestors[i].tag!
+      if (startWithEndTagOpen(s, tag))
+        return true
+    }
+  }
+
   // source为空 或者 解析到结束标签
-  return !context.source || context.source.startsWith(`</${parentTag}>`)
+  return !s
+}
+
+function startWithEndTagOpen(source: string, tag: string) {
+  return source.slice(2, tag.length + 2) === tag
 }
 
 function parseText(context: ParseContext): Node {
@@ -70,12 +83,17 @@ function parseTextData(context: ParseContext, length: number) {
   return content
 }
 
-function parseElement(context: ParseContext): Node {
+function parseElement(context: ParseContext, ancestors: Node[]): Node {
   const node = parseTag(context, TagType.START)!
+  ancestors.push(node)
+  node.children = parseChildren(context, ancestors)
+  ancestors.pop()
 
-  node.children = parseChildren(context, node.tag!)
+  if (startWithEndTagOpen(context.source, node.tag!))
+    parseTag(context, TagType.END)
 
-  parseTag(context, TagType.END)
+  else
+    throw new Error(`缺少结束标签: ${node.tag!}`)
 
   return node
 }
