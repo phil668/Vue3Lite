@@ -1,3 +1,4 @@
+import type { Node } from './ast'
 import { NodeTypes } from './ast'
 
 interface ParseContext {
@@ -12,32 +13,44 @@ const enum TagType {
 const openDelimiter = '{{'
 const endDelimiter = '}}'
 
-export function baseParse(content: string) {
+export function baseParse(content: string): Node {
   const context = createParseContext(content)
 
   return createRoot(parseChildren(context))
 }
 
-function parseChildren(context: ParseContext) {
-  const nodes = []
-  let node
-  if (context.source.startsWith(openDelimiter))
-    node = parseInterpolation(context)
+function parseChildren(context: ParseContext): Node[] {
+  const nodes: Node[] = []
+  while (!isEnd(context)) {
+    let node
+    if (context.source.startsWith(openDelimiter))
+      node = parseInterpolation(context)
 
-  else if (context.source[0].startsWith('<')) {
-    if (/[a-z]/i.test(context.source))
-      node = parseElement(context)
+    else if (context.source[0].startsWith('<')) {
+      if (/[a-z]/i.test(context.source))
+        node = parseElement(context)
+    }
+    else
+      node = parseText(context)
+
+    node && nodes.push(node)
   }
-  else
-    node = parseText(context)
-
-  nodes.push(node)
 
   return nodes
 }
 
-function parseText(context: ParseContext) {
-  const content = parseTextData(context, context.source.length)
+function isEnd(context: ParseContext) {
+  // source为空 或者 解析到结束标签
+  return !context.source || context.source === '</div>'
+}
+
+function parseText(context: ParseContext): Node {
+  let endIndex = context.source.length
+  const openDelimiterIndex = context.source.indexOf(openDelimiter)
+  if (openDelimiterIndex !== -1)
+    endIndex = context.source.indexOf(openDelimiter)
+
+  const content = parseTextData(context, endIndex)
 
   return {
     type: NodeTypes.TEXT,
@@ -53,15 +66,17 @@ function parseTextData(context: ParseContext, length: number) {
   return content
 }
 
-function parseElement(context: ParseContext) {
-  const element = parseTag(context, TagType.START)
+function parseElement(context: ParseContext): Node {
+  const node = parseTag(context, TagType.START)!
+
+  node.children = parseChildren(context)
 
   parseTag(context, TagType.END)
 
-  return element
+  return node
 }
 
-function parseTag(context: ParseContext, type: TagType) {
+function parseTag(context: ParseContext, type: TagType): Node | null {
   const match = /^<\/?([a-z]*)/.exec(context.source)
   if (!match)
     return null
@@ -72,7 +87,7 @@ function parseTag(context: ParseContext, type: TagType) {
   advanceBy(context, 1)
 
   if (TagType.END === type)
-    return
+    return null
 
   return {
     type: NodeTypes.ELEMENT,
@@ -80,7 +95,7 @@ function parseTag(context: ParseContext, type: TagType) {
   }
 }
 
-function parseInterpolation(context: ParseContext) {
+function parseInterpolation(context: ParseContext): Node {
   const closeIndex = context.source.indexOf(endDelimiter)
 
   advanceBy(context, openDelimiter.length)
@@ -106,8 +121,9 @@ function advanceBy(context: ParseContext, length: number) {
   context.source = context.source.slice(length)
 }
 
-function createRoot(children: any) {
+function createRoot(children: Array<Node>): Node {
   return {
+    type: NodeTypes.ROOT,
     children,
   }
 }

@@ -30,3 +30,24 @@ describe('parse', () => {
     })
   })
 })
+
+it.only('multile children', () => {
+  const ast = baseParse('<div>hi,{{message}}</div>')
+  expect(ast.children[0]).toStrictEqual({
+    type: NodeTypes.ELEMENT,
+    tag: 'div',
+    children: [
+      {
+        type: NodeTypes.TEXT,
+        content: 'hi,',
+      },
+      {
+        type: NodeTypes.INTERPOLATION,
+        content: {
+          type: NodeTypes.SIMPLE_EXPRESSION,
+          content: 'message',
+        },
+      },
+    ],
+  })
+})

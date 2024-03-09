@@ -3,4 +3,12 @@ export const enum NodeTypes {
   SIMPLE_EXPRESSION,
   ELEMENT,
   TEXT,
+  ROOT,
+}
+
+export interface Node {
+  type: NodeTypes
+  content?: string | Node
+  children?: Array<Node>
+  tag?: string
 }
