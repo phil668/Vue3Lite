@@ -9,6 +9,7 @@ export const enum NodeTypes {
 export interface AstTree {
   type: NodeTypes.ROOT
   children: Array<Node>
+  codegenNode?: Node
 }
 
 export interface Node {

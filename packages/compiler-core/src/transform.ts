@@ -16,7 +16,12 @@ interface TransformOptions {
 export function transform(root: AstTree, options?: TransformOptions) {
   const ctx = createTransformContext(root, options)
   traverse(root, ctx)
+  craeteRootCodegen(root)
   return root
+}
+
+function craeteRootCodegen(root: AstTree) {
+  root.codegenNode = root.children[0]
 }
 
 function createTransformContext(root: AstTree, options?: TransformOptions): TransformContext {
