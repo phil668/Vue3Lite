@@ -10,6 +10,7 @@ export interface AstTree {
   type: NodeTypes.ROOT
   children: Array<Node>
   codegenNode?: Node
+  helpers?: symbol[]
 }
 
 export interface Node {
