@@ -1,5 +1,5 @@
 import { type AstTree, type Node, NodeTypes } from './ast'
-import { TO_DISPLAY_STRING, helperNameMap } from './runtimeHelpers'
+import { CREATE_ELEMENT_VNODE, TO_DISPLAY_STRING, helperNameMap } from './runtimeHelpers'
 
 interface GenerateContext {
   code: string
@@ -41,9 +41,18 @@ function genNode(node: Node, ctx: GenerateContext) {
     case NodeTypes.INTERPOLATION:
       genInterpolation(node, ctx)
       break
+    case NodeTypes.ELEMENT:
+      genElement(node, ctx)
+      break
     default:
       break
   }
+}
+
+function genElement(node: Node, ctx: GenerateContext) {
+  const { tag } = node
+  if (tag)
+    ctx.push(`${ctx.helper(CREATE_ELEMENT_VNODE)}('${tag}')`)
 }
 
 function genExpression(node: Node, ctx: GenerateContext) {

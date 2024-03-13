@@ -1,11 +1,11 @@
 import { type AstTree, type Node, NodeTypes } from './ast'
 import { TO_DISPLAY_STRING } from './runtimeHelpers'
 
-type NodeTransform = ((node: Node) => any)
+type NodeTransform = ((node: Node, ctx: TransformContext) => any)
 
 type NodeTransforms = NodeTransform[]
 
-interface TransformContext {
+export interface TransformContext {
   root: AstTree
   nodeTransforms: NodeTransforms
   helpers: Map<symbol, number>
@@ -43,7 +43,7 @@ function createTransformContext(root: AstTree, options?: TransformOptions): Tran
 function traverse(node: Node, ctx: TransformContext) {
   const { nodeTransforms } = ctx
   for (const nodeTransform of nodeTransforms)
-    nodeTransform(node)
+    nodeTransform(node, ctx)
 
   switch (node.type) {
     case NodeTypes.INTERPOLATION:
